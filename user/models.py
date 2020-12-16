@@ -164,7 +164,7 @@ class PeopleJob(models.Model):
 class Staff(models.Model):
     name      = models.ForeignKey(People, on_delete=models.CASCADE)
     content   = models.ForeignKey(Content, on_delete=models.CASCADE)
-    role_name = models.CharField(null=True)
+    role_name = models.CharField(max_length=50, null=True)
     class Meta:
         db_table = 'staffs'
 
@@ -266,13 +266,6 @@ class ReviewCommentLike(models.Model):
         db_table = 'review_comment_likes'
 
 
-class ContentCollection(models.Model):
-    content    = models.ForeignKey(Content, on_delete=models.CASCADE)
-    collection = models.ForeignKey(Content, on_delete=models.CASCADE)
-    class Meta:
-        db_table = 'content_collections'
-
-
 class Collection(models.Model):
     user       = models.ForeignKey(User, on_delete=models.CASCADE)
     title      = models.CharField(max_length=40)
@@ -280,6 +273,13 @@ class Collection(models.Model):
     updated_at = models.DateTimeField()
     class Meta:
         db_table = 'collections'
+
+
+class ContentCollection(models.Model):
+    content    = models.ForeignKey(Content, on_delete=models.CASCADE)
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
+    class Meta:
+        db_table = 'content_collections'
 
 
 class CollectionLike(models.Model):

@@ -53,3 +53,13 @@ class SignInView(View):
                 return JsonResponse({"message": "SUCCESS", "access_token": access_token.decode('utf-8')}, status = 200)
             else:
                 return JsonResponse({"message": "INVALID_USER_NAME_OR_PASSWORD"}, status = 401)
+        
+        except json.JSONDecodeError as e:
+            return JsonResponse({"message": f"{e}"}, status = 400)
+
+        except KeyError:
+            return JsonResponse({"message": "KEY_ERROR"}, status = 400)
+
+        except User.DoesNotExists:
+            return JsonResponse({"message": "INVALID_USER_NAME_OR_PASSWORD"}, status = 400)
+

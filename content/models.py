@@ -44,7 +44,7 @@ class BookCategory(models.Model):
 
 class BookOverview(models.Model):
     sub_title              = models.CharField(max_length=45)
-    sub_category           = models.ForeignKey(BookCategory, on_delete=models.CASCADE)
+    book_category          = models.ForeignKey(BookCategory, on_delete=models.CASCADE)
     page                   = models.IntegerField(default=0, null=True)
     book_contents          = models.TextField(max_length=1000, null=True)
     publisher_introduction = models.TextField(max_length=1000, null=True)

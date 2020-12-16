@@ -1,6 +1,7 @@
-from django.db import models
+from django.db    import models
+from django.utils import timezone
 
-from user.models import User
+from user.models    import User
 from content.models import Content
 
 

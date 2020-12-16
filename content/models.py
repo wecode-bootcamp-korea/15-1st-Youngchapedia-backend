@@ -2,6 +2,7 @@ from django.db import models
 
 from user.models import Country
 
+
 class Category(models.Model):
      name = models.CharField(max_length=45)
      class Meta:

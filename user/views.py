@@ -11,7 +11,7 @@ from my_settings  import SECRET_KEY, ALGORITHM
 REGEX_EMAIL        = '([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,4}))'
 REGEX_PASSWORD     = '^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'
 
-class SignUp(View):
+class SignUpView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
@@ -38,7 +38,7 @@ class SignUp(View):
         except AssertionError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
 
-class SignIn(View):
+class SignInView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)

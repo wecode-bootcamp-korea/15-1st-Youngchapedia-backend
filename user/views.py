@@ -1,11 +1,12 @@
 import re
 import json
 import bcrypt
+import jwt
 
 from django.http  import JsonResponse
 from django.views import View
 
-from user.models  import User
+from user.models  import User, Language, Country
 from my_settings  import SECRET_KEY, ALGORITHM
 
 REGEX_EMAIL        = '([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+(\.[a-zA-Z]{2,4}))'
@@ -19,17 +20,17 @@ class SignUpView(View):
             name     = data['name']
             email    = data['email']
             password = data['password']
-            language = 'ko-kr'
-            country  = 'South Korea'
+            language = Language.objects.get(name='ko')
+            country  = Country.objects.get(name='KR')
             
             
-            assert not User.objects.filter(name = name), "ALREADY_EXISTS_ACCOUNT"
+            assert not User.objects.filter(username = name), "ALREADY_EXISTS_ACCOUNT"
             assert re.match(REGEX_EMAIL, email), "INVALID_EMAIL_FORMAT"
             assert re.match(REGEX_PASSWORD, password), "INVALID_PASSWORD_FORMAT"
 
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode()
 
-            User.objects.create(email = email, password = hashed_pasword, language = language, country = country, username = name)
+            User.objects.create(email = email, password = hashed_password, language = language, country = country, username = name)
             return JsonResponse({"message": "SUCCESS"}, status = 201)
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
@@ -60,6 +61,6 @@ class SignInView(View):
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
 
-        except User.DoesNotExists:
+        except User.DoesNotExist:
             return JsonResponse({"message": "INVALID_USER_NAME_OR_PASSWORD"}, status = 400)
 

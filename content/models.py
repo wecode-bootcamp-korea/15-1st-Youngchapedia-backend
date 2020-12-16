@@ -61,8 +61,9 @@ class ContentPhoto(models.Model):
 
 
 class People(models.Model):
-    name        = models.CharField(max_length=100)
-    description = models.TextField(null=True)
+    name              = models.CharField(max_length=100)
+    profile_image_url = models.URLField(default='')
+    description       = models.TextField(null=True)
     class Meta:
         db_table = 'people'
 
@@ -73,26 +74,13 @@ class Job(models.Model):
         db_table = 'jobs'
 
 
-class PeopleJob(models.Model):
-    people = models.ForeignKey(People, on_delete=models.CASCADE)
-    job    = models.ForeignKey(Job, on_delete=models.CASCADE)
-    class Meta:
-        db_table = 'people_jobs'
-
-
-class Staff(models.Model):
-    name      = models.ForeignKey(People, on_delete=models.CASCADE)
+class ContentPeople(models.Model):
+    people    = models.ForeignKey(People, on_delete=models.CASCADE)
     content   = models.ForeignKey(Content, on_delete=models.CASCADE)
+    job       = models.ForeignKey(Job, on_delete=models.CASCADE)
     role_name = models.CharField(max_length=50, null=True)
     class Meta:
-        db_table = 'staffs'
-
-
-class StaffJobs(models.Model):
-    staff   = models.ForeignKey(Staff, on_delete=models.CASCADE)
-    job     = models.ForeignKey(Job, on_delete=models.CASCADE)
-    class Meta:
-        db_table = 'staff_jobs'
+        db_table = 'content_people'
 
 
 class Genre(models.Model):

@@ -10,12 +10,13 @@ class Category(models.Model):
 
 
 class Content(models.Model):
-    title_korean = models.CharField(max_length=100)
-    main_photo   = models.CharField(max_length=1000)
-    category     = models.ForeignKey(Category, on_delete=models.CASCADE)
-    release_year = models.IntegerField(default=0000, null=True)
+    title_korean   = models.CharField(max_length=100)
+    main_image_url = models.URLField("Content Main Image URL", null=True)
+    category       = models.ForeignKey(Category, on_delete=models.CASCADE)
+    release_year   = models.IntegerField(default=0000, null=True)
     class Meta:
         db_table = 'contents'
+
 
 class MovieOverview(models.Model):
      title_original = models.CharField(max_length=100)
@@ -35,15 +36,15 @@ class TvProgramOverview(models.Model):
         db_table = 'tv_program_overviews'
 
 
-class SubCategory(models.Model):
+class BookCategory(models.Model):
     name = models.CharField(max_length=20)
     class Meta:
-        db_table = 'subcategories'
+        db_table = 'book_categories'
 
 
 class BookOverview(models.Model):
     sub_title              = models.CharField(max_length=45)
-    sub_category           = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    sub_category           = models.ForeignKey(BookCategory, on_delete=models.CASCADE)
     page                   = models.IntegerField(default=0, null=True)
     book_contents          = models.TextField(max_length=1000, null=True)
     publisher_introduction = models.TextField(max_length=1000, null=True)
@@ -53,8 +54,8 @@ class BookOverview(models.Model):
 
 
 class ContentPhoto(models.Model):
-    content = models.ForeignKey(Content, on_delete=models.CASCADE)
-    photo   = models.CharField(max_length=1000)
+    content   = models.ForeignKey(Content, on_delete=models.CASCADE)
+    photo_url = models.URLField("Content Photo URL")
     class Meta:
         db_table = 'content_photos'
 

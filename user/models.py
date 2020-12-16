@@ -17,21 +17,21 @@ class Country(models.Model):
 class Disclosure(models.Model):
     name  = models.CharField(max_length=10)
     class Meta:
-        db_table = 'disclosure'
+        db_table = 'disclosures'
 
 
 class User(models.Model):
-    email            = models.CharField(max_length=45)
-    password         = models.CharField(max_length=250)
-    profile_image    = models.CharField(max_length=1000, null=True)
-    user_bio         = models.TextField(max_length=300, null=True)
-    language         = models.ForeignKey(Language, on_delete=models.SET_DEFAULT, default=1)
-    country          = models.ForeignKey(Country, on_delete=models.SET_DEFAULT, default=1)
-    disclosure_scope = models.ForeignKey(Disclosure, on_delete=models.SET_DEFAULT, default=1)
-    background_image = models.CharField(max_length=1000, null=True)
-    username         = models.CharField(max_length=20)
-    relations        = models.ManyToManyField('self', through='Relation', symmetrical=False)
-    created_at       = models.DateTimeField(default = timezone.now)
+    email                = models.EmailField()
+    password             = models.CharField(max_length=250)
+    profile_image_url    = models.URLField("Profile Imange URL", null=True)
+    user_bio             = models.TextField(max_length=300, null=True)
+    language             = models.ForeignKey(Language, on_delete=models.SET_DEFAULT, default=1)
+    country              = models.ForeignKey(Country, on_delete=models.SET_DEFAULT, default=1)
+    disclosure_scope     = models.ForeignKey(Disclosure, on_delete=models.SET_DEFAULT, default=1)
+    background_image_url = models.URLField("Background Imange URL", null=True)
+    username             = models.CharField(max_length=20)
+    relations            = models.ManyToManyField('self', through='Relation', symmetrical=False)
+    created_at           = models.DateTimeField(default = timezone.now)
     class Meta:
         db_table = 'users'
 

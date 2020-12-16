@@ -11,7 +11,8 @@ class Rating(models.Model):
      content     = models.ForeignKey(Content, on_delete = models.CASCADE, related_name='rating_user')
      rating      = models.FloatField(validators=[MinValueValidator(0.5), MaxValueValidator(5.0)])
      watch_date  = models.DateField(null=True)
-     create_time = models.DateTimeField(default = timezone.now)
+     created_at  = models.DateTimeField(default = timezone.now)
+     updated_at  = models.DateTimeField(default = created_at)
      class Meta:
          db_table = 'ratings'
 
@@ -19,7 +20,7 @@ class Rating(models.Model):
 class ArchiveType(models.Model):
     name = models.CharField(max_length=10)
     class Meta:
-        db_table = 'archivetypes'
+        db_table = 'archive_types'
 
 
 class Archive(models.Model):

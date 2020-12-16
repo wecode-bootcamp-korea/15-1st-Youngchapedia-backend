@@ -42,6 +42,6 @@ class CollectionComment(models.Model):
 class CollectionCommentLike(models.Model):
     user       = models.ForeignKey(User, on_delete=models.CASCADE)
     comment    = models.ForeignKey(CollectionComment, on_delete=models.CASCADE)
-    created_at = models.TimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=timezone.now)
     class Meta:
         db_table = 'collection_comment_likes'

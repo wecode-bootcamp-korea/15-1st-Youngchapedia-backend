@@ -11,7 +11,7 @@ def id_auth(func):
     @wraps(func)
     def decorated_function(self, request, *args, *kwargs):
         try:
-            access_token = request.headers.get('access_token')
+            access_token = request.headers.get('Authorization')
             payload      = jwt.decode(access_token, SECRET_KEY, algorithms=ALGORITHM)
             login_user   = User.objects.get(id = payload['user_id'])
             request.user = login_user

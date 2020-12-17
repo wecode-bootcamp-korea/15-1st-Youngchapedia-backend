@@ -1,3 +1,5 @@
+import json
+
 from django.http  import JsonResponse
 from django.views import View
 from django.utils import timezone
@@ -11,11 +13,11 @@ class RatingView(View):
 #    @id_auth
     def post(self, request):
         try:
-            data = json.loads(request.body)
+            data   = json.loads(request.body)
 
             # user = request.user
-            user    = Content.obejcts.get(data['user'])
-            content = Content.objects.get(data['content'])
+            user    = data['user']
+            content = data['content']
             rating  = data['rating']
 
             if Rating.objects.filter(user_id = user, content_id = content):
@@ -24,7 +26,9 @@ class RatingView(View):
                     exist_rating.delete()
                     return JsonResponse({"message": "RATING_DELETED"}, status = 200)
                 else:
-                    exist_rating.update(rating = rating)
+                    exist_rating.rating = rating
+                    exist_rating.updated_at = timezone.now
+                    exist_rating.save()
                     return JsonResponse({"message": "RATING_UPDATED"}, status = 200)
 
             Rating.objects.create(user_id = user, content_id = content, rating = rating)
@@ -66,3 +70,8 @@ class RatingView(View):
             return JsonResponse({"message" f"{e}"}, status = 400)
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
+
+    def patch(self, request):
+        try:
+            data = json.loads(request.body)
+

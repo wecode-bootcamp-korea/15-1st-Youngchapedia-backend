@@ -12,7 +12,7 @@ class Rating(models.Model):
      rating      = models.FloatField(validators=[MinValueValidator(0.5), MaxValueValidator(5.0)])
      watch_date  = models.DateField(null=True)
      created_at  = models.DateTimeField(default = timezone.now)
-     updated_at  = models.DateTimeField(default = created_at)
+     updated_at  = models.DateTimeField(default = timezone.now)
      class Meta:
          db_table = 'ratings'
 

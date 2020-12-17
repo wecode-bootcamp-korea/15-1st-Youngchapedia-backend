@@ -1,11 +1,10 @@
-from django.shortcuts import render
-
-from django.http import JsonResponse
+from django.http  import JsonResponse
 from django.views import View
+from django.utils import timezone
 
 from archive.models import Rating, ArchiveType, Archive
 from content.models import Content
-
+from user.models    import User
 
 
 class RatingView(view):
@@ -18,15 +17,18 @@ class RatingView(view):
             user    = Content.obejcts.get(data['user'])
             content = Content.objects.get(data['content'])
             rating  = data['rating']
-            
+
             if Rating.objects.filter(user = user, content = content):
-                if Rating.objects.filter(user = user, content = content, rating = rating):
-                    Rating.objects.get(user = user, content = content, rating = rating).delete()
-                elif:
-                    Rating.objects.update(rating = rating)
-            else:
-                Rating.objects.create(user = user, content = content, rating = rating)
-            return JsonResponse({"message": "SUCCESS"}, status = 200)
+                exist_rating = Rating.objects.get(user = user, content = content)
+                if exist_rating.rating = rating:
+                    exist_rating.delete()
+                    return JsonResponse({"message": "RATING_DELETED"}, status = 200)
+                else:
+                    exist_rating.update(rating = rating)
+                    return JsonResponse({"message": "RATING_UPDATED"}, status = 200)
+
+            Rating.objects.create(user = user, content = content, rating = rating)
+            return JsonResponse({"message": "SUCCESS"}, status = 201)
         
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
@@ -36,17 +38,23 @@ class RatingView(view):
     def get(self, request):
         try:
             data = json.loads(request.body)
-
-            user = data.get('user')
-            content = data.get('content')
-
             results = []
-            ratings = Rating.objects.filter(user = 
 
-            for post in ratings:
+            if data.get('user') and data.get('content'):
+                ratings = Rating.objects.filter(user = data['user'], content = ['content'])
+            if data.get('user'):
+                ratings = Rating.objects.filter(user = data['user'])
+            elif data.get('content'):
+                ratings = Rating.objects.filter(content = data['content'])
+
+            for rating in ratings:
                 results.append(
                     {
-                        "user"
-    
+                        "id"      : rating.id,
+                        "user"    : User.objects.get(id=rating.user_id).usernmae,
+                        "content" : Content.objects.get(id=rating.content_id).title_korean,
+
                     }
                 )
+
+            return JsonResponse({"result": results}, status = 200)

@@ -28,7 +28,7 @@ class SignUpView(View):
             assert re.match(REGEX_PASSWORD, password), "INVALID_PASSWORD_FORMAT"
             
             assert not User.objects.filter(email=email), "ALREADY_EXISTS_ACCOUNT"
-            assert not User.objects.filter(username = name), "ALREADY_EXISTS_USERNAME"
+            assert not User.objects.filter(username=name), "ALREADY_EXISTS_USERNAME"
             
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode()
             

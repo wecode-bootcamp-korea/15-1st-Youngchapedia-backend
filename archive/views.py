@@ -7,31 +7,23 @@ from django.utils import timezone
 from archive.models import Rating, ArchiveType, Archive
 from content.models import Content
 from user.models    import User
-
+# from user.utils     import id_auth
 
 class RatingView(View):
 #    @id_auth
-    def post(self, request):
+    def post(self, request, content_pk):
         try:
             data   = json.loads(request.body)
-
+            print(data)
             # user = request.user
-            user    = data['user']
-            content = data['content']
+            user    = User.objects.get(id=data['user'])
+            content = Content.objects.get(id=content_pk)
             rating  = data['rating']
 
-            if Rating.objects.filter(user_id = user, content_id = content):
-                exist_rating = Rating.objects.get(user_id = user, content_id = content)
-                if exist_rating.rating == rating:
-                    exist_rating.delete()
-                    return JsonResponse({"message": "RATING_DELETED"}, status = 200)
-                else:
-                    exist_rating.rating = rating
-                    exist_rating.updated_at = timezone.now
-                    exist_rating.save()
-                    return JsonResponse({"message": "RATING_UPDATED"}, status = 200)
+            if Rating.objects.filter(user = user, content = content):
+                return JsonResponse({"message": "ALREADY_EIXST"}, status = 400)
 
-            Rating.objects.create(user_id = user, content_id = content, rating = rating)
+            Rating.objects.create(user = user, content = content, rating = rating)
             return JsonResponse({"message": "SUCCESS"}, status = 201)
         
         except json.JSONDecodeError as e:
@@ -70,8 +62,4 @@ class RatingView(View):
             return JsonResponse({"message" f"{e}"}, status = 400)
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
-
-    def patch(self, request):
-        try:
-            data = json.loads(request.body)
-
+    

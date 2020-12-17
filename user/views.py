@@ -22,7 +22,7 @@ class SignUpView(View):
             password = data['password']
             
             language = Language.objects.get(name=data.get('language', 'ko'))
-            country  = Country.objects.get(name=data.get('language', 'KR'))
+            country  = Country.objects.get(name=data.get('country', 'KR'))
             
             assert re.match(REGEX_EMAIL, email), "INVALID_EMAIL_FORMAT"
             assert re.match(REGEX_PASSWORD, password), "INVALID_PASSWORD_FORMAT"

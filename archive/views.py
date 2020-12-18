@@ -36,7 +36,7 @@ class RatingView(View):
         ratings = Rating.objects.filter(content = content_pk)
         results = []
         rating_list = []
-        score_sum = 0
+        
         for rating in ratings:
             results.append(
                 {

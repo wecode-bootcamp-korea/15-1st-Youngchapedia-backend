@@ -1,8 +1,9 @@
 import json
 
-from django.http  import JsonResponse
-from django.views import View
-from django.utils import timezone
+from django.http      import JsonResponse
+from django.views     import View
+from django.utils     import timezone
+from django.db.models import Avg
 
 from archive.models import Rating, ArchiveType, Archive
 from content.models import Content
@@ -34,7 +35,6 @@ class RatingView(View):
         if Content.objects.filter(id = content_pk).exists():
             ratings     = Rating.objects.filter(content = content_pk)
             results     = []
-            rating_list = []
         
             for rating in ratings:
                 results.append(
@@ -45,9 +45,8 @@ class RatingView(View):
                         "rating"  : rating.rating
                     }
                 )
-                rating_list.append(rating.rating)        
-            average_rating = sum(rating_list)/len(rating_list)
-            return JsonResponse({"result": results, "average_rating": average_rating}, status = 200)
+            average_rating = ratings.aggregate(Avg('rating'))
+            return JsonResponse({"result": results, "rating__avg": average_rating['rating__avg']}, status = 200)
         return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
 
     @id_auth
@@ -81,6 +80,6 @@ class RatingView(View):
         if Rating.objects.filter(user = user, content = content).exists():
             Rating.objects.get(user = user, content = content).delete()
             return JsonResponse({"message": "RATING_DELETED"}, status = 203)
-        return JsonResponse({"message": "NOR_RATED"}, status = 400)
+        return JsonResponse({"message": "NOT_RATED"}, status = 400)
             
 

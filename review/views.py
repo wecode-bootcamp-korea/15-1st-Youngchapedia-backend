@@ -48,6 +48,27 @@ class ReviewView(View):
 
         return JsonResponse({"result": results}, status = 200)
 
+    @id_auth
+    def patch(self, request, content_pk):
+        try:
+            data    = json.loads(request.body)
+            user    = request.body
+            content = Content.objects.get(id = content_pk)
+            body    = data['review']
+
+            patch_object = Review.objects.get(user = user, content = content)
+            patch_object.body = body
+            patch_object.updated_at = timezone.now()
+            
+            patch_object.save()
+            return JsonResponse({"message": "RATING_UPDATED"}, staus = 201)
+
+        except json.JSONDecodeError as e:
+            return JsonResponse({"message": f"{e}"}, status = 400)
+        except Content.DoesNotExist:
+            return JsonResponse({"message": "INVALID_USER"}, status = 400)
+
+
 class UserReviewView(View):
     def temp(self):
         print("Under Contruction")

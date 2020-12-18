@@ -1,5 +1,4 @@
 """youngchapedia URL Configuration
-
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.1/topics/http/urls/
 Examples:
@@ -18,5 +17,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('user', include('user.urls')),
-    path('archive', include('archive.urls')), 
+    path('review', include('review.urls')),
 ]

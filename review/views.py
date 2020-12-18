@@ -36,7 +36,17 @@ class ReviewView(View):
         reviews = Review.objects.get(id = content_pk)
         results = []
 
-        
+        for review in reviews:
+            results.append(
+                {
+                    "id"   :review.id,
+                    "user" : User.objects.get(id=rating.user_id).username,
+                    "content": Content.objects.get(id=rating.content_id).title_korean,
+                    "review" : raview.body
+                }
+            )
+
+        return JsonResponse({"result": results}, status = 200)
 
 class UserReviewView(View):
     def temp(self):

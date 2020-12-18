@@ -1,5 +1,6 @@
 import json
 
+from django.http      import JsonResponse
 from django.shortcuts import render
 from django.views     import View
 
@@ -38,16 +39,17 @@ class ReviewView(View):
     def get(self, request, content_pk):
         if not Content.objects.filter(id = content_pk):
             return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
-        reviews = Review.objects.get(id = content_pk)
+        reviews = Review.objects.filter(id = content_pk)
         results = []
 
         for review in reviews:
             results.append(
                 {
-                    "id"   :review.id,
-                    "user" : User.objects.get(id=rating.user_id).username,
-                    "content": Content.objects.get(id=rating.content_id).title_korean,
-                    "review" : raview.body
+                    "id"     : review.id,
+                    "user_id": review.user_id,
+                    "user"   : review.user.username,
+                    "content": review.content.title_korean,
+                    "review" : review.body
                 }
             )
 
@@ -63,10 +65,8 @@ class ReviewView(View):
 
             patch_object = Review.objects.get(user = user, content = content)
             patch_object.body = body
-            patch_object.updated_at = timezone.now()
-            
             patch_object.save()
-            return JsonResponse({"message": "REVIEW_UPDATED"}, staus = 201)
+            return JsonResponse({"message": "REVIEW_UPDATED"}, status = 201)
 
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
@@ -74,7 +74,7 @@ class ReviewView(View):
             return JsonResponse({"message": "INVALID_USER"}, status = 400)
 
     @id_auth
-    def delete(self, request, contetn_pk):
+    def delete(self, request, content_pk):
         user   = request.user
         content = Content.objects.get(id=content_pk)
 

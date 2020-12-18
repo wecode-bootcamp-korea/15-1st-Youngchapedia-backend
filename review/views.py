@@ -37,24 +37,22 @@ class ReviewView(View):
             return JsonResponse({"message": "INVALID_CONTENT"}, status = 400)
 
     def get(self, request, content_pk):
-        if not Content.objects.filter(id = content_pk):
-            return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
-        reviews = Review.objects.filter(id = content_pk)
-        results = []
-
-        for review in reviews:
-            results.append(
-                {
-                    "id"     : review.id,
-                    "user_id": review.user_id,
-                    "user"   : review.user.username,
-                    "content": review.content.title_korean,
-                    "review" : review.body
-                }
-            )
-
-        return JsonResponse({"result": results}, status = 200)
-
+        if Content.objects.filter(id = content_pk).exists():
+            reviews = Review.objects.filter(content_id = content_pk)
+            results = []
+            for review in reviews:
+                results.append(
+                    {
+                        "id"     : review.id,
+                        "user_id": review.user_id,
+                        "user"   : review.user.username,
+                        "content": review.content.title_korean,
+                        "review" : review.body
+                    }
+                )
+            return JsonResponse({"result": results}, status = 200)
+        return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
+        
     @id_auth
     def patch(self, request, content_pk):
         try:

@@ -10,6 +10,7 @@ class Review(models.Model):
      content     = models.ForeignKey(Content, on_delete=models.CASCADE)
      body        = models.TextField(max_length=1000)
      created_at  = models.DateTimeField(default=timezone.now)
+     updated_at  = models.DateTimeField(default=timezone.now)
      class Meta:
          db_table = 'reviews'
 

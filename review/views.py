@@ -1,12 +1,12 @@
 import json
 
 from django.shortcuts import render
-from django.utils     import timezone
 from django.views     import View
 
 from review.models  import Review
 from user.models    import User
 from user.utils     import id_auth
+from archive.models import Rating
 from content.models import Content
 
 
@@ -19,17 +19,22 @@ class ReviewView(View):
             content = Content.objects.get(id = content_pk)
             body    = data['review']
 
-            if Review.objects.filter(user = user, content = content):
+            if Review.objects.filter(user = user, content = content).exists():
                 return JsonResponse({"message": "ALREADY_EXIST"}, status = 400)
 
-            Rating.objects.create(user = user, content = content, body = body)
-            return JsonResponse({"message": "SUCCESS"}, status = 201)
+            if Rating.objects.filter(user = user, content = content).exists():
+                Review.objects.create(user = user, content = content, body = body)
+                return JsonResponse({"message": "SUCCESS"}, status = 201)
+            else:
+                return JsonResponse({"message": "NOT_RATED"}, status = 400)
 
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
-        
+        except Content.DoesNotExist:
+            return JsonResponse({"message": "INVALID_CONTENT"}, status = 400)
+
     def get(self, request, content_pk):
         if not Content.objects.filter(id = content_pk):
             return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)

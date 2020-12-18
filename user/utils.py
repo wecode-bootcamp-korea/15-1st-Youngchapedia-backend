@@ -9,7 +9,7 @@ from my_settings import SECRET_KEY, ALGORITHM
 
 def id_auth(func):
     @wraps(func)
-    def decorated_function(self, request, *args, *kwargs):
+    def decorated_function(self, request, *args, **kwargs):
         try:
             access_token = request.headers.get('Authorization')
             payload      = jwt.decode(access_token, SECRET_KEY, algorithms=ALGORITHM)

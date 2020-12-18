@@ -52,7 +52,7 @@ class ReviewView(View):
     def patch(self, request, content_pk):
         try:
             data    = json.loads(request.body)
-            user    = request.body
+            user    = request.user
             content = Content.objects.get(id = content_pk)
             body    = data['review']
 
@@ -61,13 +61,22 @@ class ReviewView(View):
             patch_object.updated_at = timezone.now()
             
             patch_object.save()
-            return JsonResponse({"message": "RATING_UPDATED"}, staus = 201)
+            return JsonResponse({"message": "REVIEW_UPDATED"}, staus = 201)
 
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
         except Content.DoesNotExist:
             return JsonResponse({"message": "INVALID_USER"}, status = 400)
 
+    @id_auth
+    def delete(self, request, contetn_pk):
+        user   = request.user
+        content = Content.objects.get(id=content_pk)
+
+        if Review.objects.filter(user = user, content = content).exists():
+            Review.objects.get(user = user, content = content).delete()
+            return JsonResponse({"message": "REVIEW_DELETED"}, status = 203)
+        return JsonResponse({"message": "NOT_RATED"}, status = 400)
 
 class UserReviewView(View):
     def temp(self):

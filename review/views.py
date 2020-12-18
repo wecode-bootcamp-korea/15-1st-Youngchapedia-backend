@@ -13,4 +13,8 @@ from content.models import Content
 class ReviewView(View):
     @id_auth
     def post(self, request, content_pk):
-        user = request.user
+        try:
+            data    = json.loads(request.body)
+            user    = request.user
+            content = Content.objects.get(id = content_pk)
+            body    = data['body']

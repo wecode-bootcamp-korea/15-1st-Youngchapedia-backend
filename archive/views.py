@@ -2,7 +2,6 @@ import json
 
 from django.http      import JsonResponse
 from django.views     import View
-from django.utils     import timezone
 from django.db.models import Avg
 
 from archive.models import Rating, ArchiveType, Archive
@@ -40,13 +39,14 @@ class RatingView(View):
                 results.append(
                     {
                         "id"      : rating.id,
+                        "user_id" : rating.user_id,
                         "user"    : rating.user.username,
                         "content" : rating.content.title_korean,
                         "rating"  : rating.rating
                     }
                 )
             average_rating = ratings.aggregate(Avg('rating'))
-            return JsonResponse({"result": results, "rating__avg": average_rating['rating__avg']}, status = 200)
+            return JsonResponse({"result": results, "avg_rating": average_rating['rating__avg']}, status = 200)
         return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
 
     @id_auth

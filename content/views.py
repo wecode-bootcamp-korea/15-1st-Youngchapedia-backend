@@ -32,6 +32,7 @@ class MainContent(View):
             )
         return JsonResponse({'RESULT': results}, status=200)
 """
+
 class PeopleContent(View):
     def get(self, request, people_id):
         try:

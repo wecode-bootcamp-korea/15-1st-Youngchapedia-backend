@@ -18,5 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('archive', include('archive.urls')),
-    path('user', include('user.urls'),
+    path('user', include('user.urls')),
 ]

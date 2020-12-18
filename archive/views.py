@@ -67,8 +67,11 @@ class RatingView(View):
 
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
-        except User.DoesNotExist:
+        except Content.DoesNotExist:
             return JsonResponse({"message": "INVALID_USER"}, status = 400)
+        except Rating.DoesNotExist:
+            return JsonResponse({"message": "INVALID_RATING"}, status = 400)
+
 
     @id_auth
     def delete(self, request, content_pk):

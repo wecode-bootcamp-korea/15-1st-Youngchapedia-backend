@@ -23,11 +23,8 @@ class ReviewView(View):
             if Review.objects.filter(user = user, content = content).exists():
                 return JsonResponse({"message": "ALREADY_EXIST"}, status = 400)
 
-            if Rating.objects.filter(user = user, content = content).exists():
-                Review.objects.create(user = user, content = content, body = body)
-                return JsonResponse({"message": "SUCCESS"}, status = 201)
-            else:
-                return JsonResponse({"message": "NOT_RATED"}, status = 400)
+            Review.objects.create(user = user, content = content, body = body)
+            return JsonResponse({"message": "SUCCESS"}, status = 201)
 
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
@@ -36,22 +33,35 @@ class ReviewView(View):
         except Content.DoesNotExist:
             return JsonResponse({"message": "INVALID_CONTENT"}, status = 400)
 
+    @id_auth
     def get(self, request, content_pk):
-        if Content.objects.filter(id = content_pk).exists():
-            reviews = Review.objects.filter(content_id = content_pk)
-            results = []
-            for review in reviews:
-                results.append(
-                    {
-                        "id"     : review.id,
-                        "user_id": review.user_id,
-                        "user"   : review.user.username,
-                        "content": review.content.title_korean,
-                        "review" : review.body
-                    }
-                )
-            return JsonResponse({"result": results}, status = 200)
-        return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
+        try:
+            user = request.user
+            if Content.objects.filter(id = content_pk).exists():
+                my_review = Review.objects.get(user = user, content_id = content_pk)
+                reviews = Review.objects.filter(content_id = content_pk)
+                results = []
+                for review in reviews:
+                    results.append(
+                        {
+                            "id"     : review.id,
+                            "user_id": review.user_id,
+                            "user"   : review.user.username,
+                            "content": review.content.title_korean,
+                            "review" : review.body
+                        }
+                    )
+                my_review_result = { 
+                        "id" : my_review.id, 
+                        "user_id": my_review.user_id, 
+                        "user": my_review.user.username, 
+                        "content": my_review.content.title_korean, 
+                        "review": my_review.body
+                        }
+                return JsonResponse({"my_result": my_review_result, "result": results}, status = 200)
+            return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
+        except Review.DoesNotExist:
+            return JsonResponse({"message": "MY_REVIEW_DOES_NOT_EXIST"}, status = 400)
         
     @id_auth
     def patch(self, request, content_pk):
@@ -70,7 +80,8 @@ class ReviewView(View):
             return JsonResponse({"message": f"{e}"}, status = 400)
         except Content.DoesNotExist:
             return JsonResponse({"message": "INVALID_USER"}, status = 400)
-
+        except Review.DoesNotExist:
+            return JsonResponse({"message": "NO_REVIEW"}, status = 400)
     @id_auth
     def delete(self, request, content_pk):
         user   = request.user
@@ -81,6 +92,14 @@ class ReviewView(View):
             return JsonResponse({"message": "REVIEW_DELETED"}, status = 203)
         return JsonResponse({"message": "NOT_RATED"}, status = 400)
 
-class UserReviewView(View):
-    def temp(self):
-        print("Under Contruction")
+
+class ReviewLikeView(View):
+    @id_auth
+    def post(self, request, review_pk):
+        try:
+            user   = request.user
+            review = Review.objects.get(id = review_pk)
+            
+            Review.objects.create(user = user, review = review)
+        except Review.DoesNotExist:
+            return JsonResponse({"message": "INVALID_REVIEW"}, status = 400)

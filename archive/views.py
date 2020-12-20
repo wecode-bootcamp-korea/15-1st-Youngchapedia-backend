@@ -102,7 +102,7 @@ class ArchiveView(View):
         except Content.DoesNotExist:
             return JsonResponse({"message": "UNVALID_CONTENT"}, status = 400)
         except ArchiveType.DoesNotExist:
-            return JsonResponse({"message": "UNKNOWN_TYPE"}, status = 400)
+            return JsonResponse({"message": "UNVALID_ARCHIVETYPE"}, status = 400)
     
     @id_auth
     def get(self, request, content_pk):
@@ -134,7 +134,7 @@ class ArchiveView(View):
         except Content.DoesNotExist:
             return JsonResponse({"message": "UNVALID_CONTENT"}, status = 400)
         except ArchiveType.DoesNotExist:
-            return JsonResponse({"message": "UNKNOWN_TYPE"}, status = 400)
+            return JsonResponse({"message": "UNVALID_ARCHIVETYPE"}, status = 400)
 
     @id_auth
     def delete(self, request, content_pk):
@@ -149,4 +149,54 @@ class ArchiveView(View):
         except Archive.DoesNotExist:
             return JsonResponse({"message": "UNVALID_ARCHIVE"}, status = 400)
 
-    
+
+class UserArchiveView(View):
+    def get(self, request, user_pk):
+        try:
+            data        = json.loads(request.body)
+            user        = User.objects.get(id = user_pk)
+            archivetype = ArchiveType.objects.get(id = data['archive_type'])
+            if Archive.objects.filter(user = user, archive_type = archivetype).exists():
+                archives    = Archive.objects.filter(user = user, archive_type = archivetype)
+                results     = []
+
+                for archive in archives:
+                    results.append(
+                        {
+                            "id"           : archive.id,
+                            "content_id"   : archive.content.id,
+                            "content"      : archive.content.title_korean,
+                            "updated_at"   : archive.updated_at,
+                        }
+                    )
+                return JsonResponse({"result": results}, status = 200)
+            return JsonResponse({"result": []}, status = 200)
+        except json.JSONDecodeError as e:
+            return JsonResponse({"message": f"{e}"}, status = 400)
+        except User.DoesNotExist:
+            return JsonResponse({"message": "UNVALID_USER"}, status = 400)
+        except ArchiveType.DoesNotExist:
+            return JsonResponse({"message": "UNVALID_ARCHIVETYPE"}, status = 400)
+
+
+class UserRatingView(View):
+    def get(self, request, user_pk):
+        try:
+            user    = User.objects.get(id = user_pk)
+            if Rating.objects.filter(user = user).exists():
+                ratings = Rating.objects.filter(user = user)
+                results = []
+
+                for rating in ratings:
+                    results.append(
+                        {
+                            "id"         : rating.id,
+                            "content"    : rating.content.title_korean,
+                            "rating"     : rating.rating,
+                            "updated_at" : rating.updated_at,
+                        }    
+                    )
+                return JsonResponse({"result": results}, status = 200)
+            return JsonResponse({"result": []}, status = 200)
+        except User.DoesNotExist:
+            return JsonResponse({"message": "UNVALID_USER"}, status = 400)

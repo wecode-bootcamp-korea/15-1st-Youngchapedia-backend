@@ -72,3 +72,4 @@ class SignInView(View):
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
         except User.DoesNotExist:
             return JsonResponse({"message": "INVALID_USER_NAME_OR_PASSWORD"}, status = 401)
+

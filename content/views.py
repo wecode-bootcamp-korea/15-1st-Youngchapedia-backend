@@ -3,9 +3,16 @@ import json
 from django.http    import JsonResponse
 from django.views   import View
 
+<<<<<<< HEAD
 from content.models import ContentPeople, ContentGenre, ContentTag, ContentService, Content, People, Genre, Tag, ContentAvailableService
 
 # Create your views here.
+=======
+from content.models import ContentPeople, ContentGenre, ContentTag
+
+# Create your views here.
+
+>>>>>>> 873941224ba16b7348479fd65f7c3d3e8b02a5d6
 class PeopleContent(View):
     def get(self, request, people_id):
         try:
@@ -25,7 +32,15 @@ class PeopleContent(View):
                         'main_image_url' : content.content.main_image_url,
                     }
                 )
+<<<<<<< HEAD
             results = [
+=======
+
+            for content in content_list:
+                content_list = dict(tuple(content.items()))
+
+            results      = [
+>>>>>>> 873941224ba16b7348479fd65f7c3d3e8b02a5d6
                 {
                     'id'                : people.id,
                     'name'              : people.name,
@@ -36,8 +51,12 @@ class PeopleContent(View):
             ]
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except People.DoesNotExist:
+<<<<<<< HEAD
             return JsonResponse({'MESSAGE' : 'INVALID_PEOPLE_ID'}, status=400)
 
+=======
+            return JsonResponse({'ERROR' : 'INVALID_PEOPLE_ID'}, status=400)
+>>>>>>> 873941224ba16b7348479fd65f7c3d3e8b02a5d6
 
 class GenreContent(View):
     def get(self, request, genre_id):
@@ -56,7 +75,15 @@ class GenreContent(View):
                         'main_image_url' : content.content.main_image_url,
                     }
                 )
+<<<<<<< HEAD
             results = [
+=======
+
+            for content in content_list:
+                content_list = dict(tuple(content.items()))
+
+            results      = [
+>>>>>>> 873941224ba16b7348479fd65f7c3d3e8b02a5d6
                 {
                     'genre_id'   : genre.id,
                     'genre_name' : genre.name,
@@ -65,8 +92,12 @@ class GenreContent(View):
             ]
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except Genre.DoesNotExist:
+<<<<<<< HEAD
             return JsonResponse({'MESSAGE' : 'INAVLID_GENRE_ID'}, status=400)
 
+=======
+            return JsonResponse({'ERROR' : 'INVALID_GENRE_ID'}, status=400)
+>>>>>>> 873941224ba16b7348479fd65f7c3d3e8b02a5d6
 
 class TagContent(View):
     def get(self, request, tag_id):
@@ -85,7 +116,15 @@ class TagContent(View):
                         'main_image_url' : content.content.main_image_url,
                     }
                 )
+<<<<<<< HEAD
             results = [
+=======
+
+            for content in content_list:
+                content_list = dict(tuple(content.items()))
+
+            results      = [
+>>>>>>> 873941224ba16b7348479fd65f7c3d3e8b02a5d6
                 {
                     'tag_id'   : tag.id,
                     'tag_name' : tag.name,
@@ -95,6 +134,7 @@ class TagContent(View):
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except Tag.DoesNotExist:
             return JsonResponse({'MESSAGE' : 'INVALID_TAG_ID'}, status=400)
+<<<<<<< HEAD
 
 
 class ContentDetail(View):
@@ -263,4 +303,6 @@ class ContentGallery(View):
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except Content.DoesNotExist:
             return JsonResponse({'MESSAGE' : 'INVALID_CONTENT_ID'}, status=400)
+=======
+>>>>>>> 873941224ba16b7348479fd65f7c3d3e8b02a5d6
 

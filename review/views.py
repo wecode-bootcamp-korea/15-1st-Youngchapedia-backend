@@ -4,7 +4,7 @@ from django.http      import JsonResponse
 from django.shortcuts import render
 from django.views     import View
 
-from review.models  import Review
+from review.models  import Review, ReviewLike
 from user.models    import User
 from user.utils     import id_auth
 from archive.models import Rating, Archive
@@ -89,7 +89,7 @@ class ReviewView(View):
 
         if Review.objects.filter(user = user, content = content).exists():
             Review.objects.get(user = user, content = content).delete()
-            return JsonResponse({"message": "REVIEW_DELETED"}, status = 203)
+            return JsonResponse({"message": "REVIEW_DELETED"}, status = 204)
         return JsonResponse({"message": "NOT_RATED"}, status = 400)
 
 
@@ -111,6 +111,7 @@ class ContentReviewView(View):
                     else:
                         rating  = ''
                         archive = ''
+                    likes = ReviewLike.objects.filter(review_id = review.id).count()
                     results.append(
                         {
                             "id"         : review.id,
@@ -120,10 +121,38 @@ class ContentReviewView(View):
                             "archive"    : archive,
                             "review"     : review.body,
                             "created_at" : review.created_at,
-                            "updated_at" : review.updated_at
+                            "updated_at" : review.updated_at,
+                            "likes"      : likes
                         }
                     )
                 return JsonResponse({"result": results}, status = 200)
             return JsonResponse({"results": []}, status = 200)
         except Content.DoesNotExist:
             return JsonResponse({"message": "UNVALID_CONTENT"}, status = 400)
+
+
+class ReviewLikeView(View):
+    @id_auth
+    def post(self, request, review_pk):
+        try:
+            user   = request.user
+            review = Review.objects.get(id = review_pk)
+            
+            if ReviewLike.objects.filter(user = user, review = review).exists():
+                return JsonResponse({"message": "ALREADY_LIKED"}, status = 400)
+            ReviewLike.objects.create(user = user, review = review)
+            return JsonResponse({"message": "SUCCESS"}, status = 203)
+        except ReviewLike.DoesNotExist:
+            return JsonResponse({"message": "UNVALID_REVIEW"}, status = 400)
+
+    @id_auth
+    def delete(self, request, review_pk):
+        try:
+            user       = request.user
+            review     = Review.objects.get(id = review_pk)
+            reviewlike = ReviewLike.objects.get(user = user, review = review)
+            reviewlike.delete()
+            return JsonResponse({"message": "LIKE_DELETED"}, status = 204)
+        except Review.DoesNotExist:
+            return JsonResponse({"message": "INVALID_REVIEW"}, status = 400)
+

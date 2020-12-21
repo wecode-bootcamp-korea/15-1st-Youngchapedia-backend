@@ -30,24 +30,22 @@ class RatingView(View):
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
 
+    @id_auth
     def get(self, request, content_pk):
-        if Content.objects.filter(id = content_pk).exists():
-            ratings     = Rating.objects.filter(content = content_pk)
-            results     = []
-        
-            for rating in ratings:
-                results.append(
-                    {
-                        "id"      : rating.id,
-                        "user_id" : rating.user_id,
-                        "user"    : rating.user.username,
-                        "content" : rating.content.title_korean,
-                        "rating"  : rating.rating
-                    }
-                )
-            average_rating = ratings.aggregate(Avg('rating'))
-            return JsonResponse({"result": results, "avg_rating": average_rating['rating__avg']}, status = 200)
-        return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
+        try:
+            user    = request.user
+            content = Content.objects.get(id = content_pk)
+            rating  = Rating.objects.get(user = user, content = content)
+            result  = {
+                            "id"      : rating.id,
+                            "rating"  : rating.rating
+                      }
+            return JsonResponse({"result": result}, status = 200)
+
+        except Rating.DoesNotExist:
+            return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
+        except Content.DoesNotExist:
+            return JsonResponse({"message": "INVALID_CONTENT"}, status = 400)
 
     @id_auth
     def patch(self, request, content_pk):
@@ -152,6 +150,29 @@ class ArchiveView(View):
             return JsonResponse({"message": "UNVALID_CONTENT"}, stauts = 400)
         except Archive.DoesNotExist:
             return JsonResponse({"message": "UNVALID_ARCHIVE"}, status = 400)
+
+
+class ContentRatingView(View):
+    def get(self, request, content_pk):
+        try:
+            content = Content.objects.get(id = content_pk)
+            ratings = Rating.objects.filter(content = content)
+            results = []
+        
+            for rating in ratings:
+                results.append(
+                    {
+                        "id"      : rating.id,
+                        "user_id" : rating.user_id,
+                        "user"    : rating.user.username,
+                        "content" : rating.content.title_korean,
+                        "rating"  : rating.rating
+                    }
+                )
+            average_rating = ratings.aggregate(Avg('rating'))
+            return JsonResponse({"result": results, "avg_rating": average_rating['rating__avg']}, status = 200)
+        except Content.DoesNotExist:
+            return JsonResponse({"message": "INVALID_CONTENT"}, status = 400)
 
 
 class UserArchiveView(View):

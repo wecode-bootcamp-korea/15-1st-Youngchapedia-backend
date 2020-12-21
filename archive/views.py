@@ -95,8 +95,8 @@ class ArchiveView(View):
             if Archive.objects.filter(user = user, content = content).exists():
                 return JsonResponse({"message": "ALREADY_EXIST"}, status = 400)
 
-            Rating.objects.create(user = user, content = content, archive_type = archivetype)
-
+            Archive.objects.create(user = user, content = content, archive_type = archivetype)
+            return JsonResponse({"message": "SUCCESS"}, status = 200)
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
         except Content.DoesNotExist:
@@ -106,13 +106,15 @@ class ArchiveView(View):
     
     @id_auth
     def get(self, request, content_pk):
-        user = request.user
+        try:
+            user = request.user
 
-        if Archive.objects.filter(user = user, content = content_pk).exists():
-            archive = Archive.objects.get(user = user, content = content_pk)
-            return JsonResponse({"archive_type" : archive.archivetype}, status = 200)
-        return JsonResponse({"archive_type" : ''}, status = 200)
- 
+            if Archive.objects.filter(user = user, content = content_pk).exists():
+                archive = Archive.objects.get(user = user, content = content_pk)
+                return JsonResponse({"archive_type" : archive.archive_type.name}, status = 200)
+            return JsonResponse({"archive_type" : ''}, status = 200)
+        except Archive.DoesNotExist:
+            return JsonResponse({"message": "UNVALID_ARCHIVE"}, status = 400)
 
     @id_auth
     def patch(self, request, content_pk):
@@ -122,13 +124,15 @@ class ArchiveView(View):
             content = Content.objects.get(id = content_pk)
             archivetype = ArchiveType.objects.get(id = data['archivetype'])
 
-            if Archive.objects.filter(user = user, content = content_pk).exists():
+            if Archive.objects.filter(user = user, content = content).exists():
                 patch_object = Archive.objects.get(user = user, content = content)
-
+                if patch_object.archive_type == archivetype:
+                    return JsonResponse({"message": "SAME_ARCHIVETYPE"}, status = 400)
                 patch_object.archive_type = archivetype
                 patch_object.save()
-
+                return JsonResponse({"message": "ARCHIVE_UPDATED"}, status = 200)
             return JsonResponse({"message": "UNVALID_ARCHIVE"}, status = 400)
+
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
         except Content.DoesNotExist:
@@ -155,7 +159,7 @@ class UserArchiveView(View):
         try:
             data        = json.loads(request.body)
             user        = User.objects.get(id = user_pk)
-            archivetype = ArchiveType.objects.get(id = data['archive_type'])
+            archivetype = ArchiveType.objects.get(id = data['archivetype'])
             if Archive.objects.filter(user = user, archive_type = archivetype).exists():
                 archives    = Archive.objects.filter(user = user, archive_type = archivetype)
                 results     = []
@@ -171,6 +175,7 @@ class UserArchiveView(View):
                     )
                 return JsonResponse({"result": results}, status = 200)
             return JsonResponse({"result": []}, status = 200)
+
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
         except User.DoesNotExist:
@@ -191,6 +196,7 @@ class UserRatingView(View):
                     results.append(
                         {
                             "id"         : rating.id,
+                            "content_id" : rating.content.id,
                             "content"    : rating.content.title_korean,
                             "rating"     : rating.rating,
                             "updated_at" : rating.updated_at,

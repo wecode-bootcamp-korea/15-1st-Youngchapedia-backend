@@ -24,7 +24,7 @@ class ArchiveType(models.Model):
 
 
 class Archive(models.Model):
-    user         = models.ForeignKey(User, on_delete=models.CASCADE, related_name='archives')
+    user         = models.ForeignKey(User, on_delete=models.CASCADE, related_name='archived_movie')
     content      = models.ForeignKey(Content, on_delete=models.CASCADE)
     archive_type = models.ForeignKey(ArchiveType, on_delete=models.CASCADE)
     created_at   = models.DateTimeField(auto_now_add=True)

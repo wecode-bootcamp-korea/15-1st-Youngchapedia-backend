@@ -99,17 +99,18 @@ class ContentReviewView(View):
             content  = Content.objects.get(id = content_pk)
             if Review.objects.filter(content = content).exists():
                 reviews  = Review.objects.filter(content = content)
-                ratings  = Rating.objects.filter(content = content)
-                archives = Archive.objects.filter(content = content)
                 results = []
 
                 for review in reviews:
                     if Rating.objects.filter(user = review.user, content = content).exists():
-                        rating  = Ratings.objects.get(user = review.user, content = content).rating
+                        rating  = Rating.objects.get(user = review.user, content = content).rating
                         archive = ''
-                    elif Archive.objects.filter(user = review.user, content = content).exits():
+                    elif Archive.objects.filter(user = review.user, content = content).exists():
                         rating  = ''
                         archive = Archive.objects.get(user = review.user, content = content).archive_type
+                    else:
+                        rating  = ''
+                        archive = ''
                     results.append(
                         {
                             "id"         : review.id,

@@ -111,5 +111,3 @@ class TagContent(View):
         except Tag.DoesNotExist:
             return JsonResponse({'MESSAGE' : 'INVALID_TAG_ID'}, status=400)
 
-
-

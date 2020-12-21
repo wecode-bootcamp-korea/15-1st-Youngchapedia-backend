@@ -52,3 +52,24 @@ class SignUpView(View):
         except Country.DoesNotExist:
             return JsonResponse({"message": "UNSUPPORTED_COUNTRY"}, status = 400)
 
+
+class SignInView(View):
+    def post(self, request):
+        try:
+            data        = json.loads(request.body)
+            email       = data['email']
+            password    = data['password']
+            signin_user = User.objects.get(email = email)
+
+            if bcrypt.checkpw(password.encode('utf-8'), signin_user.password.encode('utf-8')):
+                access_token = jwt.encode({'user_id': signin_user.id}, SECRET_KEY, algorithm = ALGORITHM)
+                return JsonResponse({"message": "SUCCESS", "access_token": access_token.decode('utf-8')}, status = 200)
+            return JsonResponse({"message": "INVALID_USER_NAME_OR_PASSWORD"}, status = 401)
+
+        except json.JSONDecodeError as e:
+            return JsonResponse({"message": f"{e}"}, status = 400)
+        except KeyError:
+            return JsonResponse({"message": "KEY_ERROR"}, status = 400)
+        except User.DoesNotExist:
+            return JsonResponse({"message": "INVALID_USER_NAME_OR_PASSWORD"}, status = 401)
+

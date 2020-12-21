@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'youngchapedia.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = DATABASES
-        
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

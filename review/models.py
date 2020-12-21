@@ -17,7 +17,7 @@ class Review(models.Model):
 
 class ReviewLike(models.Model):
     user       = models.ForeignKey(User, on_delete=models.CASCADE)
-    review     = models.ForeignKey(Review, on_delete=models.CASCADE)
+    review     = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='liked_user')
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'review_likes'

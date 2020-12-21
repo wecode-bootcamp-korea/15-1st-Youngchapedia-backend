@@ -20,23 +20,23 @@ class SignUpView(View):
             name     = data['name']
             email    = data['email']
             password = data['password']
-            
+
             language = Language.objects.get(name=data.get('language', 'ko'))
             country  = Country.objects.get(name=data.get('country', 'KR'))
-            
+
             assert re.match(REGEX_EMAIL, email), "INVALID_EMAIL_FORMAT"
             assert re.match(REGEX_PASSWORD, password), "INVALID_PASSWORD_FORMAT"
-            
+
             assert not User.objects.filter(email=email), "ALREADY_EXISTS_ACCOUNT"
             assert not User.objects.filter(username=name), "ALREADY_EXISTS_USERNAME"
-            
+
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode()
-            
+
             User.objects.create(
-                    email    = email, 
-                    password = hashed_password, 
-                    language = language, 
-                    country  = country, 
+                    email    = email,
+                    password = hashed_password,
+                    language = language,
+                    country  = country,
                     username = name
             )
             return JsonResponse({"message": "SUCCESS"}, status = 201)
@@ -72,3 +72,4 @@ class SignInView(View):
             return JsonResponse({"message": "KEY_ERROR"}, status = 400)
         except User.DoesNotExist:
             return JsonResponse({"message": "INVALID_USER_NAME_OR_PASSWORD"}, status = 401)
+

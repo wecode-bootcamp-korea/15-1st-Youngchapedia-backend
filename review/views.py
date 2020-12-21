@@ -7,7 +7,7 @@ from django.views     import View
 from review.models  import Review
 from user.models    import User
 from user.utils     import id_auth
-from archive.models import Rating
+from archive.models import Rating, Archive
 from content.models import Content
 
 
@@ -91,3 +91,38 @@ class ReviewView(View):
             Review.objects.get(user = user, content = content).delete()
             return JsonResponse({"message": "REVIEW_DELETED"}, status = 203)
         return JsonResponse({"message": "NOT_RATED"}, status = 400)
+
+
+class ContentReviewView(View):
+    def get(self, request, content_pk):
+        try:
+            content  = Content.objects.get(id = content_pk)
+            if Review.objects.filter(content = content).exists():
+                reviews  = Review.objects.filter(content = content)
+                ratings  = Rating.objects.filter(content = content)
+                archives = Archive.objects.filter(content = content)
+                results = []
+
+                for review in reviews:
+                    if Rating.objects.filter(user = review.user, content = content).exists():
+                        rating  = Ratings.objects.get(user = review.user, content = content).rating
+                        archive = ''
+                    elif Archive.objects.filter(user = review.user, content = content).exits():
+                        rating  = ''
+                        archive = Archive.objects.get(user = review.user, content = content).archive_type
+                    results.append(
+                        {
+                            "id"         : review.id,
+                            "user_id"    : review.user.id,
+                            "user"       : review.user.username,
+                            "rating"     : rating,
+                            "archive"    : archive,
+                            "review"     : review.body,
+                            "created_at" : review.created_at,
+                            "updated_at" : review.updated_at
+                        }
+                    )
+                return JsonResponse({"result": results}, status = 200)
+            return JsonResponse({"results": []}, status = 200)
+        except Content.DoesNotExist:
+            return JsonResponse({"message": "UNVALID_CONTENT"}, status = 400)

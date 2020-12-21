@@ -3,7 +3,7 @@ import json
 from django.http  import JsonResponse
 from django.views import View
 
-from content.models import *
+from content.models import ContentPeople, ContentGenre, ContentTag
 
 # Create your views here.
 

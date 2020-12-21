@@ -117,3 +117,79 @@ class ContentDetail(View):
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except Content.DoesNotExist:
             return JsonResponse({'MESSAGE' : 'INVALID_CONTENT_ID'}, status=400)
+
+class ContentSearch(View):
+    def get(self, request):
+        search_keyword    = request.GET.get('keyword', None)
+        contents          = Content.objects.all()
+        searches_korean   = contents.filter(title_korean__contains=search_keyword)
+        searches_original = MovieOverview.objects.filter(title_original__contains=search_keyword)
+        movie_list        = []
+
+        if searches_korean.count() > 0:
+            [movie_list.append(movie_korean) for movie_korean in searches_korean]
+        if searches_original.count() > 0:
+            [movie_list.append(movie_original) for movie_original in searches_original]
+
+        return JsonResponse({'MESSAGE' : 'SUCCESS'}, status=200)
+"""
+            result = [
+                {
+                    'movies' : [
+                        {
+                            'moive_title_korean' : movie.content.title_korean,
+                            'movie'
+                        } for movie in movie_list
+                    ]
+                }
+            ]
+"""
+
+
+#            [
+#                {'movie_title_korean' : movie.content.title_korean,
+#                 'movie_title_original' : movie.title_original,
+#            for movie in movie_list]
+#        }
+
+#        movie_original_list = [movie_original for movie_original in MovieOverview.objects.filter(title_original__contains=search_keyword)]
+
+"""
+#        search_movie_list =
+#        search_movie_list.append(
+#
+#        )
+#        movies          = []
+#        searched_movies = contents.filter(title_korean__contains=search_keyword) + MovieOverview.objects.filter(title_original__contains=search_keyword)
+#        searched_users  = User.objects.filter(username__contains=search_keyword)
+        print()
+        print()
+        print('========search_keyword=============')
+        print(search_keyword)
+        print('========search_kyword==============')
+        print()
+        print()
+        print('========searched_movies============')
+        results = [{
+            'movie_id' : movie.id,
+            'movie_title_korean' : movie.title_korean,
+            'movie_release_year' : movie.release_year,
+            'movie_main_image_url' : movie.main_image_url,
+            'movie_content_country' : [movie_content_country.country.name for movie_content_country in movie.contentcountry_set.all()]
+        } for movie in searched_movies]
+        print('========searched_movies============')
+        return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results})
+        movie_overview_list = []
+
+        for movie_overview in movie_overviews:
+            movie_overview_list.append(
+                {
+                    'id' : movie_overview.id,
+                    'title_korean' : movie_overview.title_korean,
+                    'main_image_url' : movie_overview.main_image_url,
+                    'release_year' : movie_overview.release_year,
+                    'country' : [movie_overview.country.name for movie_overview in movie_overview.contentcountry_set.all()],
+                }
+            )
+"""
+

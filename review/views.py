@@ -91,15 +91,3 @@ class ReviewView(View):
             Review.objects.get(user = user, content = content).delete()
             return JsonResponse({"message": "REVIEW_DELETED"}, status = 203)
         return JsonResponse({"message": "NOT_RATED"}, status = 400)
-
-
-class ReviewLikeView(View):
-    @id_auth
-    def post(self, request, review_pk):
-        try:
-            user   = request.user
-            review = Review.objects.get(id = review_pk)
-            
-            Review.objects.create(user = user, review = review)
-        except Review.DoesNotExist:
-            return JsonResponse({"message": "INVALID_REVIEW"}, status = 400)

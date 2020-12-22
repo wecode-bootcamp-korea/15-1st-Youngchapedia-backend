@@ -123,20 +123,19 @@ class ContentSearch(View):
         search_keyword = request.GET.get('keyword', None)
         search_title   = Content.objects.filter(title_korean__contains=search_keyword)
         results        = []
-
-        if search_title.exists():
-            results.append(
-                [
-                    {
-                        'movie_id'           : content.id,
-                        'movie_title_korean' : content.title_korean,
-                        'movie_main_image'   : content.main_image_url,
-                        'release_year'       : content.release_year,
-                    }
-                    for content in search_title
-                ]
-            )
         try:
+            if search_title.exists():
+                results.append(
+                    [
+                        {
+                            'movie_id'           : content.id,
+                            'movie_title_korean' : content.title_korean,
+                            'movie_main_image'   : content.main_image_url,
+                            'release_year'       : content.release_year,
+                        }
+                        for content in search_title
+                    ]
+                )
             search_people = ContentPeople.objects.filter(people_id=People.objects.get(name=search_keyword).id)
             results.append(
                 [
@@ -149,8 +148,10 @@ class ContentSearch(View):
                     for people in search_people
                 ]
             )
+
+            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except People.DoesNotExist:
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
-        return JsonResponse({'MESSAGE' : 'SUCCESS_', 'RESULT' : results}, status=200)
+
 
 

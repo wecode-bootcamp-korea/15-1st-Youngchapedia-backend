@@ -41,7 +41,7 @@ class ReviewView(View):
         try:
             user = request.user
             if Review.objects.filter(id = content_pk).exists():
-                my_review = Review.objects.get(user = user, content_id = content_pk)
+                my_review = Review.objects.select_related('user', 'content').get(user = user, content_id = content_pk)
                 my_review_result = { 
                         "id" : my_review.id, 
                         "user_id": my_review.user_id, 

@@ -21,4 +21,5 @@ urlpatterns = [
     path('contents', include('content.urls')),
     path('user', include('user.urls')),
     path('review', include('review.urls')),
+    path('archive', include('archive.urls')),
 ]

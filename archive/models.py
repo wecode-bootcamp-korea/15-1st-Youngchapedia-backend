@@ -7,12 +7,12 @@ from content.models import Content
 
 
 class Rating(models.Model):
-     user        = models.ForeignKey(User, on_delete = models.CASCADE, related_name='rated_movie')
-     content     = models.ForeignKey(Content, on_delete = models.CASCADE, related_name='rating_user')
+     user        = models.ForeignKey(User, on_delete = models.CASCADE, related_name='rated_contents')
+     content     = models.ForeignKey(Content, on_delete = models.CASCADE, related_name='rating_users')
      rating      = models.FloatField(validators=[MinValueValidator(0.5), MaxValueValidator(5.0)])
      watch_date  = models.DateField(null=True)
-     created_at  = models.DateTimeField(default = timezone.now)
-     updated_at  = models.DateTimeField(default = created_at)
+     created_at  = models.DateTimeField(auto_now_add=True)
+     updated_at  = models.DateTimeField(auto_now=True)
      class Meta:
          db_table = 'ratings'
 
@@ -24,11 +24,10 @@ class ArchiveType(models.Model):
 
 
 class Archive(models.Model):
-    user         = models.ForeignKey(User, on_delete=models.CASCADE, related_name='archives')
+    user         = models.ForeignKey(User, on_delete=models.CASCADE, related_name='archived_contents')
     content      = models.ForeignKey(Content, on_delete=models.CASCADE)
     archive_type = models.ForeignKey(ArchiveType, on_delete=models.CASCADE)
-    created_at   = models.DateTimeField(timezone.now)
-    updated_at   = models.DateTimeField()
+    created_at   = models.DateTimeField(auto_now_add=True)
+    updated_at   = models.DateTimeField(auto_now=True)
     class Meta:
         db_table = 'archives'
-

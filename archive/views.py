@@ -5,7 +5,7 @@ from django.views     import View
 from django.db.models import Avg
 
 from archive.models import Rating, ArchiveType, Archive
-from archive.utils  import ratings_calc
+from archive.utils  import calculate_ratings
 from content.models import Content
 from user.models    import User
 from user.utils     import id_auth
@@ -164,7 +164,8 @@ class ContentRatingView(View):
                         "rating"  : rating.rating
                       } for rating in ratings]
         
-            average_rating = ratings_calc(content_pk)
+            average_rating = calculate_ratings(content_pk)
+            print(average_rating)
             return JsonResponse({"result": results, "avg_rating": average_rating['rating__avg']}, status = 200)
         except Content.DoesNotExist:
             return JsonResponse({"message": "INVALID_CONTENT"}, status = 400)

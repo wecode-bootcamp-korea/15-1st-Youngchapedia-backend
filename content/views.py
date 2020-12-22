@@ -120,35 +120,37 @@ class ContentDetail(View):
 
 class ContentSearch(View):
     def get(self, request):
-        search_keyword  = request.GET.get('keyword', None)
-        search_title = Content.objects.filter(title_korean__contains=search_keyword)
-        content_list = []
+        search_keyword = request.GET.get('keyword', None)
+        search_title   = Content.objects.filter(title_korean__contains=search_keyword)
+        results        = []
+
         if search_title.exists():
-            content_list.append(
+            results.append(
                 [
                     {
-                        'movie_id' : content.id,
+                        'movie_id'           : content.id,
                         'movie_title_korean' : content.title_korean,
-                        'movie_main_image' : content.main_image_url,
-                        'release_year' : content.release_year,
+                        'movie_main_image'   : content.main_image_url,
+                        'release_year'       : content.release_year,
                     }
                     for content in search_title
                 ]
             )
         try:
             search_people = ContentPeople.objects.filter(people_id=People.objects.get(name=search_keyword).id)
-            content_list.append(
+            results.append(
                 [
                     {
-                        'movie_id' : people.content.id,
+                        'movie_id'           : people.content.id,
                         'movie_title_korean' : people.content.title_korean,
-                        'movie_main_image' : people.content.main_image_url,
-                        'release_year' : people.content.release_year,
+                        'movie_main_image'   : people.content.main_image_url,
+                        'release_year'       : people.content.release_year,
                     }
                     for people in search_people
                 ]
             )
         except People.DoesNotExist:
-            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : content_list})
-        return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : content_list}, status=200)
+            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
+        return JsonResponse({'MESSAGE' : 'SUCCESS_', 'RESULT' : results}, status=200)
+
 

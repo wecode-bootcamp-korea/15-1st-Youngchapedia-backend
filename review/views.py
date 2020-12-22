@@ -98,8 +98,7 @@ class ContentReviewView(View):
         try:
             content  = Content.objects.get(id = content_pk)
             if Review.objects.filter(content = content).exists():
-                reviews  = Review.objects.select_related('user').prefetch_related('user__rated_movie', 'liked_user', 'user__archives').filter(content = content_pk)
-                # reviews  = Review.objects.filter(content = content_pk)
+                reviews  = Review.objects.select_related('user').prefetch_related('user__rated_contents', 'liked_user', 'user__archives').filter(content = content_pk)
                 
                 results = []
 

@@ -128,10 +128,10 @@ class ContentSearch(View):
                 results.append(
                     [
                         {
-                            'movie_id'           : content.id,
-                            'movie_title_korean' : content.title_korean,
-                            'movie_main_image'   : content.main_image_url,
-                            'release_year'       : content.release_year,
+                            'id'             : content.id,
+                            'title_korean'   : content.title_korean,
+                            'main_image_url' : content.main_image_url,
+                            'release_year'   : content.release_year,
                         }
                         for content in search_title
                     ]
@@ -140,10 +140,10 @@ class ContentSearch(View):
             results.append(
                 [
                     {
-                        'movie_id'           : people.content.id,
-                        'movie_title_korean' : people.content.title_korean,
-                        'movie_main_image'   : people.content.main_image_url,
-                        'release_year'       : people.content.release_year,
+                        'id'             : people.content.id,
+                        'title_korean'   : people.content.title_korean,
+                        'main_image_url' : people.content.main_image_url,
+                        'release_year'   : people.content.release_year,
                     }
                     for people in search_people
                 ]

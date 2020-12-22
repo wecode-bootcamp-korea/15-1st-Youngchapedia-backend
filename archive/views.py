@@ -171,19 +171,32 @@ class ContentRatingView(View):
             return JsonResponse({"message": "INVALID_CONTENT"}, status = 400)
 
 
+class UserMainView(View):
+    @id_auth
+    def get(self, request):
+        user  = request.user
+        rated = Rating.objects.filter(user = user).count()
+        wish  = Archive.objects.filter(user = user, archive_type_id = 1).count()
+        watch = Archive.objects.filter(user = user, archive_type_id = 2).count()
+        return JsonResponse({"username": user.username, "rate": rated, "wish": wish, "watching": watch}, status = 200)
+
+
 class UserArchiveView(View):
-    def get(self, request, user_pk):
+    @id_auth
+    def get(self, request):
         try:
             data        = json.loads(request.body)
-            user        = User.objects.get(id = user_pk)
+            user        = request.user
             archivetype = ArchiveType.objects.get(id = data['archive_type'])
             if Archive.objects.filter(user = user, archive_type = archivetype).exists():
                 archives    = Archive.objects.filter(user = user, archive_type = archivetype).select_related('content')
                 results     = [{
-                                "id"           : archive.id,
-                                "content_id"   : archive.content.id,
-                                "content"      : archive.content.title_korean,
-                                "updated_at"   : archive.updated_at,
+                                "id"            : archive.id,
+                                "content_id"    : archive.content.id,
+                                "content_title" : archive.content.title_korean,
+                                "content_image" : archive.content.main_image_url,
+                                "rating"        : calculate_ratings(archive.content_id)['rating__avg'],
+                                "updated_at"    : archive.updated_at,
                             } for archive in archives]
 
                 return JsonResponse({"result": results}, status = 200)
@@ -198,17 +211,19 @@ class UserArchiveView(View):
 
 
 class UserRatingView(View):
-    def get(self, request, user_pk):
+    @id_auth
+    def get(self, request):
         try:
-            user    = User.objects.get(id = user_pk)
+            user    = request.user
             if Rating.objects.filter(user = user).exists():
                 ratings = Rating.objects.filter(user = user).select_related('content')
                 results = [{
-                            "id"         : rating.id,
-                            "content_id" : rating.content.id,
-                            "content"    : rating.content.title_korean,
-                            "rating"     : rating.rating,
-                            "updated_at" : rating.updated_at,
+                            "id"            : rating.id,
+                            "content_id"    : rating.content.id,
+                            "content_title" : rating.content.title_korean,
+                            "content_image" : rating.content.main_image_url,
+                            "rating"        : rating.rating,
+                            "updated_at"    : rating.updated_at,
                             } for rating in ratings]
 
                 return JsonResponse({"result": results}, status = 200)

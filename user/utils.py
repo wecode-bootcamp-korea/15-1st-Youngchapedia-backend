@@ -15,7 +15,7 @@ def id_auth(func):
             payload      = jwt.decode(access_token, SECRET_KEY, algorithms=ALGORITHM)
             login_user   = User.objects.get(id = payload['user_id'])
             request.user = login_user
-
+            print(request.user)
             return func(self, request, *args, **kwargs)
 
         except jwt.exceptions.DecodeError:

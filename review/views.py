@@ -19,11 +19,14 @@ class ReviewView(View):
             user    = request.user
             content = Content.objects.get(id = content_pk)
             body    = data['review']
+            
+            review, created = Review.objects.get_or_create(user    = user, 
+                                                           content = content,
+                                                           body    = body)
 
-            if Review.objects.filter(user = user, content = content).exists():
+            if not created: 
                 return JsonResponse({"message": "ALREADY_EXIST"}, status = 400)
 
-            Review.objects.create(user = user, content = content, body = body)
             return JsonResponse({"message": "SUCCESS"}, status = 201)
 
         except json.JSONDecodeError as e:
@@ -37,20 +40,8 @@ class ReviewView(View):
     def get(self, request, content_pk):
         try:
             user = request.user
-            if Content.objects.filter(id = content_pk).exists():
+            if Review.objects.filter(id = content_pk).exists():
                 my_review = Review.objects.get(user = user, content_id = content_pk)
-                reviews = Review.objects.filter(content_id = content_pk)
-                results = []
-                for review in reviews:
-                    results.append(
-                        {
-                            "id"     : review.id,
-                            "user_id": review.user_id,
-                            "user"   : review.user.username,
-                            "content": review.content.title_korean,
-                            "review" : review.body
-                        }
-                    )
                 my_review_result = { 
                         "id" : my_review.id, 
                         "user_id": my_review.user_id, 
@@ -58,8 +49,9 @@ class ReviewView(View):
                         "content": my_review.content.title_korean, 
                         "review": my_review.body
                         }
-                return JsonResponse({"my_result": my_review_result, "result": results}, status = 200)
-            return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
+                return JsonResponse({"my_result": my_review_result}, status = 200)
+            else:
+                return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
         except Review.DoesNotExist:
             return JsonResponse({"message": "MY_REVIEW_DOES_NOT_EXIST"}, status = 400)
         
@@ -139,9 +131,9 @@ class ReviewLikeView(View):
             user   = request.user
             review = Review.objects.get(id = review_pk)
             
-            if ReviewLike.objects.filter(user = user, review = review).exists():
+            like, created = ReviewLike.objects.get_or_create(user = user, review = review) 
+            if not created:
                 return JsonResponse({"message": "ALREADY_LIKED"}, status = 400)
-            ReviewLike.objects.create(user = user, review = review)
             return JsonResponse({"message": "SUCCESS"}, status = 203)
         except ReviewLike.DoesNotExist:
             return JsonResponse({"message": "UNVALID_REVIEW"}, status = 400)

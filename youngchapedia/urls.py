@@ -20,5 +20,4 @@ urlpatterns = [
     path('user', include('user.urls')),
     path('contents', include('content.urls')),
     path('archive', include('archive.urls')),
-    path('review', include('review.urls')),
 ]

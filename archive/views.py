@@ -24,7 +24,7 @@ class RatingView(View):
 
             Rating.objects.create(user = user, content = content, rating = rating)
             return JsonResponse({"message": "SUCCESS"}, status = 201)
-        
+
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
         except KeyError:
@@ -83,7 +83,7 @@ class ArchiveView(View):
     @id_auth
     def post(self, request, content_pk):
         try:
-            data        = json.loads(request.body) 
+            data        = json.loads(request.body)
             user        = request.user
             content     = Content.objects.get(id=content_pk)
             archivetype = ArchiveType.objects.get(id=data['archive_type'])
@@ -99,7 +99,7 @@ class ArchiveView(View):
             return JsonResponse({"message": "INVALID_CONTENT"}, status = 400)
         except ArchiveType.DoesNotExist:
             return JsonResponse({"message": "INVALID_ARCHIVETYPE"}, status = 400)
-    
+
     @id_auth
     def get(self, request, content_pk):
         try:
@@ -162,7 +162,7 @@ class ContentRatingView(View):
                         "content" : rating.content.title_korean,
                         "rating"  : rating.rating
                       } for rating in ratings]
-        
+
             average_rating = ratings.aggregate(Avg('rating'))
             return JsonResponse({"result": results, "avg_rating": average_rating['rating__avg']}, status = 200)
         except Content.DoesNotExist:

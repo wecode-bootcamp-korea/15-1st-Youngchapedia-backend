@@ -140,29 +140,26 @@ class ContentOverview(View):
 class ContentCast(View):
     def get(self, request, content_id):
         try:
-            content = Content.objects.get(id=content_id)
+            content     = Content.objects.get(id=content_id)
+            people_list = content.contentpeople_set.all()
 
-            cast_list = [
+            result = [
                 {
                     'people_id'        : people.people.id,
                     'people_name'      : people.people.name,
                     'role'             : people.role_name,
                     'people_image_url' : people.people.profile_image_url,
-                } for people in content.contentpeople_set.all()
+                } for people in people_list
             ]
-
-            results = {
-                'cast' : cast_list,
-            }
-
-            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
+            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : result}, status=200)
         except Content.DoesNotExist:
             return JsonResponse({'MESSAGE' : 'INVALID_CONTENT_ID'}, status=400)
 
 
 class WatchaContent(View):
     def get(self, request):
-        services = ContentService.objects.get(name='watcha')
+        service = ContentService.objects.get(name='watcha')
+        watcha_contents = ContentAvailableService.objects.filter(content_service_id=service.id)
         watcha_content_list = [
             {
                 'id'             : watcha_content.content.id,
@@ -170,20 +167,23 @@ class WatchaContent(View):
                 'title_original' : watcha_content.content.movieoverview_set.get().title_original,
                 'category'       : watcha_content.content.category.name,
                 'main_image_url' : watcha_content.content.main_image_url,
-            } for watcha_content in services.contentavailableservice_set.all()
+            } for watcha_content in watcha_contents
         ]
 
-        results = {
-                'service_id'   : services.id,
-                'service_name' : services.name,
+        results = [
+            {
+                'service_id'   : service.id,
+                'service_name' : service.name,
                 'contents'     : watcha_content_list,
             }
+        ]
         return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
 
 
 class NetflixContent(View):
     def get(self, request):
-        services              = ContentService.objects.get(name='netflix')
+        service              = ContentService.objects.get(name='netflix')
+        netflix_contents     = ContentAvailableService.objects.filter(content_service_id=service.id)
         netflix_content_list = [
             {
                 'id'             : netflix_content.content.id,
@@ -191,14 +191,16 @@ class NetflixContent(View):
                 'title_original' : netflix_content.content.movieoverview_set.get().title_original,
                 'category'       : netflix_content.content.category.name,
                 'main_image_url' : netflix_content.content.main_image_url,
-            } for netflix_content in services.contentavailableservice_set.all()
+            } for netflix_content in netflix_contents
         ]
 
-        results = {
+        results = [
+            {
                 'service_id'   : service.id,
                 'service_name' : service.name,
                 'contents'     : netflix_content_list,
             }
+        ]
         return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
 
 
@@ -206,14 +208,21 @@ class ContentGallery(View):
     def get(self, request, content_id):
         try:
             content            = Content.objects.get(id=content_id)
-            gallery_photo_list = [gallery_photo.photo_url for gallery_photo in content.contentphoto_set.all()]
+            gallery_photos     = ContentPhoto.objects.filter(content_id=content_id)
+            gallery_photo_list = [gallery_photo.photo_url for gallery_photo in gallery_photos]
 
-            results = {
+            results = [
+                {
                 'content_id'           : content.id,
                 'content_title_korean' : content.title_korean,
                 'galleris_image'       : gallery_photo_list,
                 }
+            ]
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except Content.DoesNotExist:
             return JsonResponse({'MESSAGE' : 'INVALID_CONTENT_ID'}, status=400)
+
+
+
+
 

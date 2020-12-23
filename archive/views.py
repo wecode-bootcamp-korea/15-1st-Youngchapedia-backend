@@ -185,9 +185,8 @@ class UserArchiveView(View):
     @id_auth
     def get(self, request):
         try:
-            data        = json.loads(request.body)
             user        = request.user
-            archivetype = ArchiveType.objects.get(id = data['archive_type'])
+            archivetype = request.GET['archive_type']
             if Archive.objects.filter(user = user, archive_type = archivetype).exists():
                 archives    = Archive.objects.filter(user = user, archive_type = archivetype).select_related('content')
                 results     = [{

@@ -1,5 +1,3 @@
-import json
-
 from django.http    import JsonResponse
 from django.views   import View
 
@@ -142,7 +140,7 @@ class ContentCast(View):
         try:
             content = Content.objects.get(id=content_id)
 
-            cast_list = [
+            results = [
                 {
                     'people_id'        : people.people.id,
                     'people_name'      : people.people.name,
@@ -150,11 +148,6 @@ class ContentCast(View):
                     'people_image_url' : people.people.profile_image_url,
                 } for people in content.contentpeople_set.all()
             ]
-
-            results = {
-                'cast' : cast_list,
-            }
-
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except Content.DoesNotExist:
             return JsonResponse({'MESSAGE' : 'INVALID_CONTENT_ID'}, status=400)
@@ -162,7 +155,7 @@ class ContentCast(View):
 
 class WatchaContent(View):
     def get(self, request):
-        services = ContentService.objects.get(name='watcha')
+        content_services = ContentService.objects.get(name='watcha')
         watcha_content_list = [
             {
                 'id'             : watcha_content.content.id,
@@ -170,12 +163,12 @@ class WatchaContent(View):
                 'title_original' : watcha_content.content.movieoverview_set.get().title_original,
                 'category'       : watcha_content.content.category.name,
                 'main_image_url' : watcha_content.content.main_image_url,
-            } for watcha_content in services.contentavailableservice_set.all()
+            } for watcha_content in content_services.contentavailableservice_set.all()
         ]
 
         results = {
-                'service_id'   : services.id,
-                'service_name' : services.name,
+                'service_id'   : content_services.id,
+                'service_name' : content_services.name,
                 'contents'     : watcha_content_list,
             }
         return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
@@ -183,7 +176,7 @@ class WatchaContent(View):
 
 class NetflixContent(View):
     def get(self, request):
-        services              = ContentService.objects.get(name='netflix')
+        content_services = ContentService.objects.get(name='netflix')
         netflix_content_list = [
             {
                 'id'             : netflix_content.content.id,
@@ -191,12 +184,12 @@ class NetflixContent(View):
                 'title_original' : netflix_content.content.movieoverview_set.get().title_original,
                 'category'       : netflix_content.content.category.name,
                 'main_image_url' : netflix_content.content.main_image_url,
-            } for netflix_content in services.contentavailableservice_set.all()
+            } for netflix_content in content_services.contentavailableservice_set.all()
         ]
 
         results = {
-                'service_id'   : services.id,
-                'service_name' : services.name,
+                'service_id'   : content_services.id,
+                'service_name' : content_services.name,
                 'contents'     : netflix_content_list,
             }
         return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
@@ -211,7 +204,7 @@ class ContentGallery(View):
             results = {
                 'content_id'           : content.id,
                 'content_title_korean' : content.title_korean,
-                'galleris_image'       : gallery_photo_list,
+                'gallery_images'       : gallery_photo_list,
                 }
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except Content.DoesNotExist:

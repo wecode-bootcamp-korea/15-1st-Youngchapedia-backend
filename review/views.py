@@ -94,37 +94,26 @@ class ContentReviewView(View):
             if Review.objects.filter(content = content).exists():
                 reviews  = Review.objects.select_related('user').prefetch_related('liked_users').filter(content = content_pk)
                 
-                results = []
+                results = [
+                            {
+                                "id"           : review.id,
+                                "user_id"      : review.user.id,
+                                "user"         : review.user.username,
+                                "user_profile" : review.user.profile_image_url,
+                                "rating"       : review.user.rated_contents.get(content_id = content_pk).rating if Rating.objects.filter(user=review.user, content = content).exists() else '',
+                                "archive"      : review.user.archived_contents.get(content_id = content_pk).archive_type_id if Archive.objects.filter(user=review.user, content=content).exists() else '',
+                                "review"       : review.body,
+                                "created_at"   : review.created_at,
+                                "updated_at"   : review.updated_at,
+                                "likes"        : ReviewLike.objects.filter(review_id = review.id).count()
+                            } for review in reviews  
+                        ]
 
-                for review in reviews:
-                    if Rating.objects.filter(user = review.user, content = content).exists():
-                        rating  = Rating.objects.get(user = review.user, content = content).rating
-                        archive = ''
-                    elif Archive.objects.filter(user = review.user, content = content).exists():
-                        rating  = ''
-                        archive = Archive.objects.get(user = review.user, content = content).archive_type
-                    else:
-                        rating  = ''
-                        archive = ''
-                    likes = ReviewLike.objects.filter(review_id = review.id).count()
-                    results.append(
-                        {
-                            "id"           : review.id,
-                            "user_id"      : review.user.id,
-                            "user"         : review.user.username,
-                            "user_profile" : review.user.profile_image_url,
-                            "rating"       : rating,
-                            "archive"      : archive,
-                            "review"       : review.body,
-                            "created_at"   : review.created_at,
-                            "updated_at"   : review.updated_at,
-                            "likes"        : likes
-                        }
-                    )
                 return JsonResponse({"result": results}, status = 200)
             return JsonResponse({"results": []}, status = 200)
         except Content.DoesNotExist:
             return JsonResponse({"message": "UNVALID_CONTENT"}, status = 400)
+            
 
 
 class ReviewLikeView(View):

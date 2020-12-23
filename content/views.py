@@ -4,7 +4,8 @@ from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
-from content.models import ContentPeople, ContentGenre, ContentTag, Content, People, Genre, Tag
+from content.models   import ContentPeople, ContentGenre, ContentTag, Content, People, Genre
+from content.models   import Tag, MovieOverview, ContentAvailableService, ContentService, ContentPhoto
 
 # Create your views here.
 
@@ -115,6 +116,99 @@ class ContentDetail(View):
                     'country'        : [country.country.name for country in countries],
                 }
             ]
+            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
+        except Content.DoesNotExist:
+            return JsonResponse({'MESSAGE' : 'INVALID_CONTENT_ID'}, status=400)
+
+class ContentOverview(View):
+    def get(self, request, content_id):
+        try:
+            content          = Content.objects.get(id=content_id)
+
+            result = {
+                'content_id'     : content.id,
+                'title_original' : content.movieoverview_set.get().title_original,
+                'release_year'   : content.release_year,
+                'genre'          : [genre.genre.name for genre in content.contentgenre_set.all()],
+                'runtime'        : content.movieoverview_set.get().runtime,
+                'description'    : content.movieoverview_set.get().description,
+            }
+            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : result}, status=200)
+        except Content.DoesNotExist:
+            return JsonResponse({'MESSAGE' : 'INVALID_CONTENTS_ID'}, status=400)
+
+
+class ContentCast(View):
+    def get(self, request, content_id):
+        try:
+            content = Content.objects.get(id=content_id)
+
+            results = [
+                {
+                    'people_id'        : people.people.id,
+                    'people_name'      : people.people.name,
+                    'role'             : people.role_name,
+                    'people_image_url' : people.people.profile_image_url,
+                } for people in content.contentpeople_set.all()
+            ]
+            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
+        except Content.DoesNotExist:
+            return JsonResponse({'MESSAGE' : 'INVALID_CONTENT_ID'}, status=400)
+
+
+class WatchaContent(View):
+    def get(self, request):
+        content_services = ContentService.objects.get(name='watcha')
+        watcha_content_list = [
+            {
+                'id'             : watcha_content.content.id,
+                'title_korean'   : watcha_content.content.title_korean,
+                'title_original' : watcha_content.content.movieoverview_set.get().title_original,
+                'category'       : watcha_content.content.category.name,
+                'main_image_url' : watcha_content.content.main_image_url,
+            } for watcha_content in content_services.contentavailableservice_set.all()
+        ]
+
+        results = {
+                'service_id'   : content_services.id,
+                'service_name' : content_services.name,
+                'contents'     : watcha_content_list,
+            }
+        return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
+
+
+class NetflixContent(View):
+    def get(self, request):
+        content_services = ContentService.objects.get(name='netflix')
+        netflix_content_list = [
+            {
+                'id'             : netflix_content.content.id,
+                'title_korean'   : netflix_content.content.title_korean,
+                'title_original' : netflix_content.content.movieoverview_set.get().title_original,
+                'category'       : netflix_content.content.category.name,
+                'main_image_url' : netflix_content.content.main_image_url,
+            } for netflix_content in content_services.contentavailableservice_set.all()
+        ]
+
+        results = {
+                'service_id'   : content_services.id,
+                'service_name' : content_services.name,
+                'contents'     : netflix_content_list,
+            }
+        return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
+
+
+class ContentGallery(View):
+    def get(self, request, content_id):
+        try:
+            content            = Content.objects.get(id=content_id)
+            gallery_photo_list = [gallery_photo.photo_url for gallery_photo in content.contentphoto_set.all()]
+
+            results = {
+                'content_id'           : content.id,
+                'content_title_korean' : content.title_korean,
+                'gallery_images'       : gallery_photo_list,
+                }
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except Content.DoesNotExist:
             return JsonResponse({'MESSAGE' : 'INVALID_CONTENT_ID'}, status=400)

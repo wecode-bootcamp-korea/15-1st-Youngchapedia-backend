@@ -4,7 +4,8 @@ from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
-from content.models import ContentPeople, ContentGenre, ContentTag, Content, People, Genre, Tag, MovieOverview, ContentAvailableService, ContentService, ContentPhoto
+from content.models   import ContentPeople, ContentGenre, ContentTag, Content, People, Genre
+from content.models   import Tag, MovieOverview, ContentAvailableService, ContentService, ContentPhoto
 
 # Create your views here.
 

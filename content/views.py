@@ -121,8 +121,8 @@ class ContentDetail(View):
 class ContentSearch(View):
     def get(self, request):
         search_keyword = request.GET.get('keyword', None)
-        search_title   = Content.objects.filter(title_korean__contains=search_keyword)
-        results        = []
+        content_list   = Content.objects.filter(title_korean__contains=search_keyword, __contentpeople__people_id=People.objects.get(name=search_keyword).id)
+        results = [:    ]
         try:
             if search_title.exists():
                 results.append(

@@ -1,7 +1,8 @@
 import json
 
-from django.http    import JsonResponse
-from django.views   import View
+from django.http      import JsonResponse
+from django.views     import View
+from django.db.models import Q
 
 from content.models import ContentPeople, ContentGenre, ContentTag, Content, People, Genre, Tag
 
@@ -26,7 +27,7 @@ class PeopleContent(View):
                         'main_image_url' : content.content.main_image_url,
                     }
                 )
-            results      = [
+            results = [
                 {
                     'id'                : people.id,
                     'name'              : people.name,
@@ -117,3 +118,18 @@ class ContentDetail(View):
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
         except Content.DoesNotExist:
             return JsonResponse({'MESSAGE' : 'INVALID_CONTENT_ID'}, status=400)
+
+class ContentSearch(View):
+    def get(self, request):
+        search_keyword = request.GET.get('keyword', None)
+        content_list = ContentPeople.objects.filter(Q(content__title_korean__contains=search_keyword) |Q(people__name=search_keyword))
+        results = [
+            {
+                'id' : content.id,
+                'title_korean' : content.content.title_korean,
+                'main_image_url' : content.content.main_image_url,
+                'release_year' : content.content.release_year,
+            }
+            for content in content_list
+        ]
+        return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results})

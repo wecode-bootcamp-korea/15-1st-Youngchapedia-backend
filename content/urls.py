@@ -1,6 +1,10 @@
 from django.urls import path
 
+<<<<<<< HEAD
 from content.views import PeopleContent, GenreContent, TagContent, ContentDetail, ContentOverview, ContentCast, WatchaContent, NetflixContent, ContentGallery
+=======
+from content.views import PeopleContent, GenreContent, TagContent, ContentDetail, ContentSearch
+>>>>>>> main
 
 urlpatterns = [
     path('/<int:content_id>', ContentDetail.as_view()),
@@ -12,4 +16,5 @@ urlpatterns = [
     path('/gallery/<int:content_id>', ContentGallery.as_view()),
     path('/<int:content_id>/overview', ContentOverview.as_view()),
     path('/cast/<int:content_id>', ContentCast.as_view()),
+    path('/search', ContentSearch.as_view()),
 ]

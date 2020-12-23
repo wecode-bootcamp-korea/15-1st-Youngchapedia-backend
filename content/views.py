@@ -129,8 +129,8 @@ class ContentOverview(View):
                 'title_original' : content.movieoverview_set.get().title_original,
                 'release_year'   : content.release_year,
                 'genre'          : [genre.genre.name for genre in content.contentgenre_set.all()],
-                'runtime'        : content_overview.runtime,
-                'description'    : content_overview.description,
+                'runtime'        : content.movieoverview_set.get().runtime,
+                'description'    : content.movieoverview_set.get().description,
             }
             return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : result}, status=200)
         except Content.DoesNotExist:
@@ -195,8 +195,8 @@ class NetflixContent(View):
         ]
 
         results = {
-                'service_id'   : service.id,
-                'service_name' : service.name,
+                'service_id'   : services.id,
+                'service_name' : services.name,
                 'contents'     : netflix_content_list,
             }
         return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)

@@ -27,8 +27,7 @@ class ReviewView(View):
                 review.save()
                 return JsonResponse({"message": "SUCCESS"}, status = 201)
 
-            else:
-                return JsonResponse({"message": "ALREADY_EXIST"}, status = 400)
+            return JsonResponse({"message": "ALREADY_EXIST"}, status = 400)
  
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
@@ -52,8 +51,7 @@ class ReviewView(View):
                         "review"       : my_review.body,
                         }
                 return JsonResponse({"my_result": my_review_result}, status = 200)
-            else:
-                return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
+            return JsonResponse({"message": "INVALID_CONTENT_ID"}, status = 400)
         except Review.DoesNotExist:
             return JsonResponse({"message": "MY_REVIEW_DOES_NOT_EXIST"}, status = 400)
         

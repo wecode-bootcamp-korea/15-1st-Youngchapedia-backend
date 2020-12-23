@@ -122,7 +122,7 @@ class ContentDetail(View):
 class ContentSearch(View):
     def get(self, request):
         search_keyword = request.GET.get('keyword', None)
-        content_list = ContentPeople.objects.filter(Q(content__title_korean__contains=search_keyword) | Q(people__name__contains=search_keyword))
+        content_list = ContentPeople.objects.filter(Q(content__title_korean__contains=search_keyword) |Q(people__name=search_keyword))
         results = [
             {
                 'id' : content.id,

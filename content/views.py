@@ -1,7 +1,8 @@
 import json
 
-from django.http    import JsonResponse
-from django.views   import View
+from django.http      import JsonResponse
+from django.views     import View
+from django.db.models import Q
 
 from content.models import ContentPeople, ContentGenre, ContentTag, Content, People, Genre, Tag
 
@@ -26,7 +27,7 @@ class PeopleContent(View):
                         'main_image_url' : content.content.main_image_url,
                     }
                 )
-            results      = [
+            results = [
                 {
                     'id'                : people.id,
                     'name'              : people.name,
@@ -121,39 +122,14 @@ class ContentDetail(View):
 class ContentSearch(View):
     def get(self, request):
         search_keyword = request.GET.get('keyword', None)
-        content_list = Content.objects.filter(title_korean__contains=search_keyword, contentpeople__people.name() )
-
-        content_people_list = Content.objects.filter(contentpeople__people_id=People.objects.filter(name=search_keyword)])
-        print('start=========================================')
-        print(content_people_list.values())
-        print('===========================================end')
-        return JsonResponse({'MESSAGE' : 'SUCCESS'})
-
-
-
-
-"""
-        try:
-            content_related_list = Content.objects.filter(title_korean__contains=search_keyword)
-            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' :'reulst' }, status=200)
-        except People.DoesNotExist:
-            print('====================error_debug===================')
-            print('====================error_debug===================')
-            return JsonResponse({'MESSAGE' :  'NO_RESULTS'}, status=400)
-
-
-
-            results.append(
-                [
-                    {
-                        'id' : content.id,
-                        'title_korean' : content.title_korean,
-                        'main_image_url' : content.main_image_url,
-                        'release_year' : content.release_year,
-                    }
-                    for content in content_list
-                ]
-            )
-"""
-
-'Q객체 q라는 ㄷ객체에다가 넘기고 싶은 데이터를...'
+        content_list = ContentPeople.objects.filter(Q(content__title_korean__contains=search_keyword) | Q(people__name__contains=search_keyword))
+        results = [
+            {
+                'id' : content.id,
+                'title_korean' : content.content.title_korean,
+                'main_image_url' : content.content.main_image_url,
+                'release_year' : content.content.release_year,
+            }
+            for content in content_list
+        ]
+        return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results})

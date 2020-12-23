@@ -103,7 +103,7 @@ class ContentReviewView(View):
                                 "review"       : review.body,
                                 "created_at"   : review.created_at,
                                 "updated_at"   : review.updated_at,
-                                "likes"        : ReviewLike.objects.filter(review_id = review.id).count()
+                                "likes"        : review.liked_users.count(),
                             } for review in reviews  
                         ]
 

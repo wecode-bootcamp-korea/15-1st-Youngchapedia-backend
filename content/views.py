@@ -121,37 +121,39 @@ class ContentDetail(View):
 class ContentSearch(View):
     def get(self, request):
         search_keyword = request.GET.get('keyword', None)
-        content_list   = Content.objects.filter(title_korean__contains=search_keyword, __contentpeople__people_id=People.objects.get(name=search_keyword).id)
-        results = [:    ]
+        content_list = Content.objects.filter(title_korean__contains=search_keyword, contentpeople__people.name() )
+
+        content_people_list = Content.objects.filter(contentpeople__people_id=People.objects.filter(name=search_keyword)])
+        print('start=========================================')
+        print(content_people_list.values())
+        print('===========================================end')
+        return JsonResponse({'MESSAGE' : 'SUCCESS'})
+
+
+
+
+"""
         try:
-            if search_title.exists():
-                results.append(
-                    [
-                        {
-                            'id'             : content.id,
-                            'title_korean'   : content.title_korean,
-                            'main_image_url' : content.main_image_url,
-                            'release_year'   : content.release_year,
-                        }
-                        for content in search_title
-                    ]
-                )
-            search_people = ContentPeople.objects.filter(people_id=People.objects.get(name=search_keyword).id)
+            content_related_list = Content.objects.filter(title_korean__contains=search_keyword)
+            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' :'reulst' }, status=200)
+        except People.DoesNotExist:
+            print('====================error_debug===================')
+            print('====================error_debug===================')
+            return JsonResponse({'MESSAGE' :  'NO_RESULTS'}, status=400)
+
+
+
             results.append(
                 [
                     {
-                        'id'             : people.content.id,
-                        'title_korean'   : people.content.title_korean,
-                        'main_image_url' : people.content.main_image_url,
-                        'release_year'   : people.content.release_year,
+                        'id' : content.id,
+                        'title_korean' : content.title_korean,
+                        'main_image_url' : content.main_image_url,
+                        'release_year' : content.release_year,
                     }
-                    for people in search_people
+                    for content in content_list
                 ]
             )
+"""
 
-            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
-        except People.DoesNotExist:
-            return JsonResponse({'MESSAGE' : 'SUCCESS', 'RESULT' : results}, status=200)
-
-
-
+'Q객체 q라는 ㄷ객체에다가 넘기고 싶은 데이터를...'

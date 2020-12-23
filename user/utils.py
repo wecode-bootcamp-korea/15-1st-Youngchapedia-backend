@@ -12,10 +12,10 @@ def id_auth(func):
     def decorated_function(self, request, *args, **kwargs):
         try:
             access_token = request.headers.get('Authorization')
+            print(access_token)
             payload      = jwt.decode(access_token, SECRET_KEY, algorithms=ALGORITHM)
             login_user   = User.objects.get(id = payload['user_id'])
             request.user = login_user
-            print(request.user)
             return func(self, request, *args, **kwargs)
 
         except jwt.exceptions.DecodeError:

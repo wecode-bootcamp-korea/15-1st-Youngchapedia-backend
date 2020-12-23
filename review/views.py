@@ -21,14 +21,15 @@ class ReviewView(View):
             body    = data['review']
             
             review, created = Review.objects.get_or_create(user    = user, 
-                                                           content = content,
-                                                           body    = body)
+                                                           content = content)
+            if created:
+                review.body = data['body']
+                review.save()
+                return JsonResponse({"message": "SUCCESS"}, status = 201)
 
-            if not created: 
+            else:
                 return JsonResponse({"message": "ALREADY_EXIST"}, status = 400)
-
-            return JsonResponse({"message": "SUCCESS"}, status = 201)
-
+ 
         except json.JSONDecodeError as e:
             return JsonResponse({"message": f"{e}"}, status = 400)
         except KeyError:
@@ -43,11 +44,12 @@ class ReviewView(View):
             if Review.objects.filter(id = content_pk).exists():
                 my_review = Review.objects.select_related('user', 'content').get(user = user, content_id = content_pk)
                 my_review_result = { 
-                        "id" : my_review.id, 
-                        "user_id": my_review.user_id, 
-                        "user": my_review.user.username, 
-                        "content": my_review.content.title_korean, 
-                        "review": my_review.body
+                        "id"           : my_review.id, 
+                        "user_id"      : my_review.user_id, 
+                        "user"         : my_review.user.username, 
+                        "user_profile" : my_review.user.profile_image_url,
+                        "content"      : my_review.content.title_korean, 
+                        "review"       : my_review.body,
                         }
                 return JsonResponse({"my_result": my_review_result}, status = 200)
             else:
@@ -90,7 +92,7 @@ class ContentReviewView(View):
         try:
             content  = Content.objects.get(id = content_pk)
             if Review.objects.filter(content = content).exists():
-                reviews  = Review.objects.select_related('user').prefetch_related('user__rated_contents', 'liked_users', 'user__archived_contents').filter(content = content_pk)
+                reviews  = Review.objects.select_related('user').prefetch_related('liked_users').filter(content = content_pk)
                 
                 results = []
 
@@ -107,15 +109,16 @@ class ContentReviewView(View):
                     likes = ReviewLike.objects.filter(review_id = review.id).count()
                     results.append(
                         {
-                            "id"         : review.id,
-                            "user_id"    : review.user.id,
-                            "user"       : review.user.username,
-                            "rating"     : rating,
-                            "archive"    : archive,
-                            "review"     : review.body,
-                            "created_at" : review.created_at,
-                            "updated_at" : review.updated_at,
-                            "likes"      : likes
+                            "id"           : review.id,
+                            "user_id"      : review.user.id,
+                            "user"         : review.user.username,
+                            "user_profile" : review.user.profile_image_url,
+                            "rating"       : rating,
+                            "archive"      : archive,
+                            "review"       : review.body,
+                            "created_at"   : review.created_at,
+                            "updated_at"   : review.updated_at,
+                            "likes"        : likes
                         }
                     )
                 return JsonResponse({"result": results}, status = 200)

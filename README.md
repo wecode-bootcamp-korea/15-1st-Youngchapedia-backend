@@ -70,7 +70,7 @@
 ## 👩‍💻Frontend
 
 - [김별이](https://velog.io/@byulyikeem/%EA%B8%B0%EB%A1%9D-1%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%98%81%EC%B0%A8-%ED%94%BC%EB%94%94%EC%95%84)
-- 조아람
+- [조아람](https://velog.io/@aramcho206/youngchapediaproject)
 - 한준희
 
 ## 🧑‍💻 Backend

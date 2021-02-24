@@ -1,7 +1,7 @@
 # Team YoungchaPeida
 
 - 진행기간: 2020년 12월 14일 ~ 2020년 12월 24일
-<img width="1275" alt="스크린샷 2020-12-28 오후 9 26 02" src="https://user-images.githubusercontent.com/67036362/103214327-7b9e0980-4953-11eb-8adc-f675aa60b38b.png">
+<img width="1275" alt="스크린샷 2020-12-28 오후 9 26 02" src="https://user-images.githubusercontent.com/67036362/103214327-7b9e0980-4953-11eb-8adc-f675aa60b38b.png">
 
 ## 🍿프로젝트 소개
 
@@ -61,7 +61,23 @@
 - 영화별 평균 별점 조회 기능
 - 유저가 평가한 영화 모아보기 기능
 
---(작성 중)--
+### 영화 아카이브 기능
+
+- '보는 중', '보고싶어요' 등 영화에 대한 유저별 아카이브 수정, 삭제 기능 구현
+- 아카이브 별 영화 리스트 조화 기능 구현
+
+### 영화 정보 검색 기능
+
+- 참여 배우, 감독 별 영화 검색 기능
+- 장르 별 영화 검색 기능
+- 영화 태그 별 조회 기능
+- 왓차, 넷플릭스 등 OTT 서비스별 시청 가능한 영화 검색 기능
+- 영화 별 상세 정보 (개봉 연도, 국가, 평점) 조회 기능
+
+### 영화 리뷰 기능
+
+- 영화에 대한 리뷰 작성, 조회, 수정, 삭제 기능
+- 영화 별 리뷰 조회 및 개별 리뷰에 대한 좋아요 횟수 조회
 
 ---
 
@@ -71,7 +87,7 @@
 
 - [김별이](https://velog.io/@byulyikeem/%EA%B8%B0%EB%A1%9D-1%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%98%81%EC%B0%A8-%ED%94%BC%EB%94%94%EC%95%84)
 - [조아람](https://velog.io/@aramcho206/youngchapediaproject)
-- 한준희
+- [한준희](https://velog.io/@jjuny0113/wecode%EC%97%90%EC%84%9C-1%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9B%84%EA%B8%B0React-js)
 
 ## 🧑‍💻 Backend
 
